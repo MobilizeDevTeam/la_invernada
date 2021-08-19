@@ -165,10 +165,11 @@ class ProductProduct(models.Model):
         for lot in lots:
             if 'Verde' in lot.product_id.name:
                 oven_use = self.env['oven.use'].search([('used_lot_id', '=', lot.id)])
-                if oven_use.finish_date and oven_use.finish_active_time:
-                    lot.stock_production_lot_serial_ids.write({
-                        'consumed': True
-                    })
+                for oven in oven_use:
+                    if oven.finish_date and oven.finish_active_time:
+                        lot.stock_production_lot_serial_ids.write({
+                            'consumed': True
+                        })
             total = sum(lot.stock_production_lot_serial_ids.filtered(lambda a: not a.consumed).mapped('display_weight'))
             if total != lot.available_kg:
                 lot.sudo().write({
