@@ -110,5 +110,5 @@ class ProcessReport(models.TransientModel):
         workbook.close()
         with open(file_name, "rb") as file:
             file_base64 = base64.b64encode(file.read())
-        report_name = f'Informe de Proceso {process_name}'
+        report_name = f'Informe de Proceso {self.process_id.name}'
         return {'file_name': report_name, 'base64': file_base64}
