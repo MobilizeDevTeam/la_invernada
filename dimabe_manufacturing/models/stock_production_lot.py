@@ -862,7 +862,7 @@ class StockProductionLot(models.Model):
 
     def add_selection_serial(self, picking_id, location_id):
         pallets = self.stock_production_lot_serial_ids.filtered(
-            lambda a: a.to_add and not a.reserved_to_stock_picking_id).mapped('pallet_id')
+            lambda a: a.to_add and not a.reserved_to_stock_picking_id and not a.reserved_to_production_id).mapped('pallet_id')
         for pallet in pallets:
             pallet.write({
                 'reserved_to_stock_picking_id': picking_id
