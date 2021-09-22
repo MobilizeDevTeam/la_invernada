@@ -31,7 +31,7 @@
         <menuitem id="process_washed_menu"
                   action="dimabe_manufacturing.process_report_washed"
                   name="Informe de Proceso Lavado"
-                  parent="process_report_menu"|
+                  parent="process_report_menu"
         />
 
     </data>
