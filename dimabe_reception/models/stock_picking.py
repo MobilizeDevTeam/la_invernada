@@ -300,8 +300,9 @@ class StockPicking(models.Model):
     def get_product_move(self):
         return self.move_ids_without_package.filtered(
             lambda x: x.product_id.categ_id.id in self.picking_type_id.warehouse_id.products_can_be_stored.filtered(
-                lambda y: not y.reserve_ignore).ids)[0] if self.picking_type_id.warehouse_id.products_can_be_stored.filtered(
-                lambda y: not y.reserve_ignore).ids else None
+                lambda y: not y.reserve_ignore).ids)[0] if self.move_ids_without_package.filtered(
+            lambda x: x.product_id.categ_id.id in self.picking_type_id.warehouse_id.products_can_be_stored.filtered(
+                lambda y: not y.reserve_ignore).ids) else None
 
 
     @api.multi
