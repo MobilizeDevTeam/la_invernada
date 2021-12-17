@@ -140,6 +140,13 @@ class UnpelledDried(models.Model):
         compute='_compute_oven_in_use_ids',
         string='Hornos en Uso')
 
+    can_done = fields.Boolean('Se puede finalizar', compute='compute_can_done')
+
+    @api.multi
+    def compute_can_done(self):
+        for item in self:
+            item.can_done = all(oven.state == 'done' for oven in item.oven_use_ids)
+
     @api.multi
     def _compute_oven_in_use_ids(self):
         for item in self:
@@ -379,6 +386,33 @@ class UnpelledDried(models.Model):
             item.write({
                 'can_close': False
             })
+
+    @api.multi
+    def start_new_unpelled(self):
+        for item in self:
+            new_process = self.env['unpelled.dried'].create({
+                'producer_id': item.producer_id.id,
+                'state': 'draft',
+                'origin_location_id': item.origin_location_id.id,
+                'dest_location_id': item.dest_location_id.id,
+                'product_in_id': item.product_in_id.id,
+                'out_product_id': item.out_product_id.id,
+                'canning_id': item.canning_id.id,
+                'label_durability_id': item.label_durability_id.id,
+            })
+            view_id = self.env.ref('dimabe_manufacturing.unpelled_dried_form_view')
+            return {
+                "name": 'Nuevo Proceso',
+                "type": 'ir.actions.act_window',
+                "view_type": 'form',
+                "view_mode": 'form',
+                "res_model": 'unpelled.dried',
+                'views': [(view_id.id,'form')],
+                'view_id': view_id.id,
+                'target': 'current',
+                'res_id': new_process.id,
+                'context': self.env.context,
+            }
 
     @api.multi
     def go_history(self):

@@ -13,13 +13,15 @@
             <form name="dried_process">
                 <header>
                     <field name="can_close" invisible="1"/>
+                    <field name="can_done" invisible="1"/>
                     <button string="Finalizar Lote"
                             class="oe_highlight"
                             name="finish_unpelled_dried"
                             type="object"
-                            attrs="{'invisible':[('state','!=','progress'),('can_close','!=',True)]}"
+                            attrs="{'invisible':[('can_done','=',False)]}"
                             confirm="¿Desea cerrar el lote actual?, el lote tomará todos los lotes de los cajones que se encuentren terminados"
                     />
+                    <button string="Comenzar Nuevo Proceso" type="object" class="oe_highlight" name="start_new_unpelled" />
                     <field name="state" widget="statusbar" statusbar_visible="draft,progress,done"/>
                 </header>
 
@@ -27,6 +29,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <field name="id" invisible="1"/>
+
                         <field name="history_ids" invisible="1"/>
                         <button string="Ver Historial"
                                 name="go_history"
