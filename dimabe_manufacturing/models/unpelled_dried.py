@@ -1,5 +1,6 @@
 from odoo import fields, models, api
 from odoo.addons import decimal_precision as dp
+from py_linq import Enumerable
 
 
 class UnpelledDried(models.Model):
@@ -18,7 +19,6 @@ class UnpelledDried(models.Model):
 
     can_close = fields.Boolean(
         'Puede Cerrar',
-        compute='_compute_can_close'
     )
 
     state = fields.Selection([
@@ -92,7 +92,7 @@ class UnpelledDried(models.Model):
         'oven.use',
         'unpelled_dried_id',
         'Hornos',
-        domain=[('history_id','=',None)]
+        domain=[('history_id', '=', None)]
     )
 
     used_lot_ids = fields.One2many(
@@ -135,6 +135,16 @@ class UnpelledDried(models.Model):
         'Durabilidad Etiqueta'
     )
 
+    oven_in_use_ids = fields.Many2many(
+        comodel_name='dried.oven',
+        compute='_compute_oven_in_use_ids',
+        string='Hornos en Uso')
+
+    @api.multi
+    def _compute_oven_in_use_ids(self):
+        for item in self:
+            item.oven_in_use_ids = item.oven_use_ids.mapped('dried_oven_ids')
+
     @api.multi
     def _compute_used_lot_ids(self):
         for item in self:
@@ -154,9 +164,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def _compute_can_close(self):
         for item in self:
-            item.can_close = len(item.oven_use_ids.filtered(
-                lambda a: a.ready_to_close
-            )) > 0
+            item.can_close = any(oven.state == 'done' for oven in item.oven_use_ids)
 
     @api.multi
     def _compute_performance(self):
@@ -172,9 +180,11 @@ class UnpelledDried(models.Model):
     @api.multi
     def _compute_total_in_weight(self):
         for item in self:
-            item.total_in_weight = sum(item.oven_use_ids.filtered(
-                lambda a: a.ready_to_close
-            ).mapped('used_lot_id').mapped('stock_production_lot_serial_ids').mapped('display_weight'))
+            if len(item.used_lot_ids) > 0:
+                item.total_in_weight = sum(
+                    item.used_lot_ids.mapped('stock_production_lot_serial_ids').mapped('display_weight'))
+            else:
+                item.total_in_weight = 0
 
     @api.multi
     def _compute_in_lot_ids(self):
@@ -211,7 +221,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def _compute_name(self):
         for item in self:
-            item.name = '{} {}'.format(item.producer_id.name, item.out_lot_id.product_id.display_name)
+            item.name = '{} {}'.format(item.out_lot_id.name, item.out_lot_id.product_id.display_name)
 
     @api.model
     def create_out_lot(self):
@@ -232,22 +242,16 @@ class UnpelledDried(models.Model):
     def create_history(self):
 
         return self.env['dried.unpelled.history'].create({
+            'is_old_version': True,
             'unpelled_dried_id': self.id,
             'total_in_weight': sum(self.oven_use_ids.filtered(
-                lambda a: a.ready_to_close
+                lambda a: a.state == 'done'
             ).mapped('used_lot_id').mapped('stock_production_lot_serial_ids').mapped('display_weight'))
         })
 
     @api.model
     def create(self, values_list):
         res = super(UnpelledDried, self).create(values_list)
-
-        for oven_use in res.oven_use_ids:
-            if len(res.oven_use_ids.filtered(lambda a: a.used_lot_id == oven_use.used_lot_id)) > 1:
-                raise models.ValidationError('el lote {} se encuentra en más de un registro de secado'.format(
-                    oven_use.used_lot_id
-                ))
-
         res.state = 'draft'
 
         res.create_out_lot()
@@ -258,12 +262,6 @@ class UnpelledDried(models.Model):
     def write(self, values):
         res = super(UnpelledDried, self).write(values)
         for item in self:
-            for oven_use in item.oven_use_ids:
-                if len(item.oven_use_ids.filtered(lambda a: a.used_lot_id == oven_use.used_lot_id)) > 1:
-                    raise models.ValidationError('el lote {} se encuentra en más de un registro de secado.'
-                                                 'Solo puede encontrarse en un registro'.format(
-                        oven_use.used_lot_id.name
-                    ))
             if item.out_lot_id.stock_production_lot_serial_ids:
                 for serial_id in item.out_lot_id.stock_production_lot_serial_ids:
                     serial_id.canning_id = item.canning_id
@@ -294,7 +292,7 @@ class UnpelledDried(models.Model):
                     'product_id': item.out_product_id.id
                 })
             oven_use_to_close_ids = item.oven_use_ids.filtered(
-                lambda a: a.ready_to_close
+                lambda a: a.state == 'done'
             )
 
             for oven_use in oven_use_to_close_ids:
@@ -378,6 +376,9 @@ class UnpelledDried(models.Model):
             item.out_lot_id.verify_without_lot()
             item.out_lot_id.update_kg(item.out_lot_id.id)
 
+            item.write({
+                'can_close': False
+            })
 
     @api.multi
     def go_history(self):

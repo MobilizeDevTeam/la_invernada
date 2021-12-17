@@ -1,5 +1,6 @@
 from odoo import fields, models, api
 from odoo.addons import decimal_precision as dp
+import datetime
 
 
 class DriedUnpelledHistory(models.Model):
@@ -36,6 +37,7 @@ class DriedUnpelledHistory(models.Model):
     producer_id = fields.Many2one(
         'res.partner',
         'Productor',
+        domain=[('supplier', '=', True)],
         readonly=True
     )
 
@@ -154,6 +156,21 @@ class DriedUnpelledHistory(models.Model):
         compute='_compute_can_edit'
     )
 
+    is_old_version = fields.Boolean(
+        'Modo Antiguo (2020-2021)',
+        default=True
+    )
+
+    can_adjust = fields.Boolean(
+        'Se puede adjustar la diferencia?',
+        compute='compute_can_adjust'
+    )
+
+    @api.multi
+    def compute_can_adjust(self):
+        for item in self:
+            item.can_adjust = item.out_serial_sum != item.total_out_weight
+
     @api.multi
     def _compute_out_serial_sum(self):
         for item in self:
@@ -186,7 +203,8 @@ class DriedUnpelledHistory(models.Model):
     @api.multi
     def _compute_dried_oven_ids(self):
         for item in self:
-            item.dried_oven_ids = item.oven_use_ids.mapped('dried_oven_ids')
+            print()
+            item.dried_oven_ids = item.oven_use_ids.mapped('dried_oven_id')
 
     @api.multi
     def _compute_picking_type_id(self):
@@ -232,6 +250,7 @@ class DriedUnpelledHistory(models.Model):
 
     @api.model
     def create(self, values_list):
+        values_list['is_old_version'] = False
         res = super(DriedUnpelledHistory, self).create(values_list)
         if 'unpelled_dried_id' in values_list:
             unpelled_dried_id = self.env['unpelled.dried'].search([('id', '=', values_list['unpelled_dried_id'])])
@@ -252,14 +271,13 @@ class DriedUnpelledHistory(models.Model):
                 res.canning_id = unpelled_dried_id.canning_id
         return res
 
-
     @api.multi
     def adjust_stock(self):
         for item in self:
             if item.total_in_weight == 0:
                 item.write({
                     'total_in_weight': sum(item.oven_use_ids.filtered(
-                        lambda a: a.ready_to_close
+                        lambda a: a.state == 'done'
                     ).mapped('used_lot_id').mapped('stock_production_lot_serial_ids').mapped('display_weight'))
                 })
             if item.out_serial_ids.filtered(
