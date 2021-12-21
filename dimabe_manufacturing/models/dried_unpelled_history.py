@@ -239,7 +239,7 @@ class DriedUnpelledHistory(models.Model):
     @api.multi
     def _compute_name(self):
         for item in self:
-            item.name = '{} {}'.format(item.producer_id.name, item.out_product_id.display_name)
+            item.name = f'{item.out_lot_id.name} {item.out_product_id.display_name}'
 
     @api.multi
     @api.depends('total_in_weight', 'total_out_weight')

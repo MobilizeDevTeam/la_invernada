@@ -21,7 +21,8 @@
                             attrs="{'invisible':[('can_done','=',False)]}"
                             confirm="¿Desea cerrar el lote actual?, el lote tomará todos los lotes de los cajones que se encuentren terminados"
                     />
-                    <button string="Comenzar Nuevo Proceso" type="object" class="oe_highlight" name="start_new_unpelled" />
+                    <button string="Comenzar Nuevo Proceso"
+                            type="object" class="oe_highlight" name="start_new_unpelled"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,progress,done"/>
                 </header>
 
@@ -31,6 +32,12 @@
                         <field name="id" invisible="1"/>
 
                         <field name="history_ids" invisible="1"/>
+                        <button string="Ver Procesos"
+                                name="go_another_process"
+                                type="object"
+                                icon="fa-pie-chart"
+                                context="{'producer_id': producer_id}"
+                        />
                         <button string="Ver Historial"
                                 name="go_history"
                                 type="object"
@@ -75,7 +82,7 @@
                                 <button string="pausar horno"
                                         name="pause_process"
                                         type="object"
-                                        attrs="{'invisible': ['|',('state','in',['done','pause']),('init_date','=',False)]}"
+                                        attrs="{'invisible': ['|',('state','in',['done','pause','cancel']),('init_date','=',False)]}"
                                 />
                                 <button string="reanudar horno"
                                         name="resume_process"
@@ -83,6 +90,8 @@
                                         attrs="{'invisible': [('state','!=','pause')]}"/>
                                 <button name="finish_process" attrs="{'invisible':[('state','!=','in_process')]}"
                                         type="object" string="Terminar Horno"/>
+                                <button name="cancel_process" type="object" string="Cancelar Horno"
+                                        attrs="{'invisible': [('state','in',('done','draft','cancel'))]}"/>
                                 <button string="Imprimir"
                                         attrs="{'invisible':[('used_lot_id','=',False)]}"
                                         name="print_oven_label"

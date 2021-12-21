@@ -407,7 +407,7 @@ class UnpelledDried(models.Model):
                 "view_type": 'form',
                 "view_mode": 'form',
                 "res_model": 'unpelled.dried',
-                'views': [(view_id.id,'form')],
+                'views': [(view_id.id, 'form')],
                 'view_id': view_id.id,
                 'target': 'current',
                 'res_id': new_process.id,
@@ -431,4 +431,15 @@ class UnpelledDried(models.Model):
             ],
             'target': 'fullscreen',
             'domain': [('unpelled_dried_id', '=', unpelled_dried_id)]
+        }
+
+    @api.multi
+    def go_another_process(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'unpelled.dried',
+            'name': f'Procesos Activos de {self.producer_id.name}',
+            'views': [[self.env.ref('dimabe_manufacturing.unpelled_dried_tree_view').id, 'tree'], [False, 'form']],
+            'target': 'fullscreen',
+            'domain': [('producer_id', '=', self.producer_id.id), ('state', '=', 'progress')]
         }

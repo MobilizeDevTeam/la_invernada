@@ -114,7 +114,7 @@ class OvenUse(models.Model):
     state = fields.Selection(
         string='Estado',
         selection=[('draft', 'Borrador'), ('pause', 'en Pausa'),
-                   ('in_process', 'En Proceso'), ('done', 'Finalizado')],
+                   ('in_process', 'En Proceso'), ('cancel', 'Cancelado'), ('done', 'Finalizado')],
         default=lambda self: 'draft' if not self.finish_date else 'done')
 
     @api.multi
@@ -161,6 +161,21 @@ class OvenUse(models.Model):
                 'is_in_use': True
             })
             item.used_lot_id.unpelled_state = 'drying'
+
+    @api.multi
+    def cancel_process(self):
+        for item in self:
+            if item.state == 'done':
+                raise models.ValidationError('Este proceso ya ha finalizado')
+            item.write({
+                'state': 'cancel',
+            })
+            item.dried_oven_id.write({
+                'is_in_use': True
+            })
+            item.used_lot_id.write({
+                'unpelled_state': 'waiting'
+            })
 
     @api.multi
     def pause_process(self):
