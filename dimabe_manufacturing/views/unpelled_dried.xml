@@ -22,7 +22,8 @@
                             confirm="¿Desea cerrar el lote actual?, el lote tomará todos los lotes de los cajones que se encuentren terminados"
                     />
                     <button string="Comenzar Nuevo Proceso"
-                            type="object" class="oe_highlight" name="start_new_unpelled"/>
+                            type="object" class="oe_highlight" name="start_new_unpelled"
+                            attrs="{'invisible': [('state','=','done')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,progress,done"/>
                 </header>
 
