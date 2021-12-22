@@ -145,7 +145,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def compute_can_done(self):
         for item in self:
-            item.can_done = all(oven.state == 'done' for oven in item.oven_use_ids)
+            item.can_done = all(oven.state == 'done' for oven in item.oven_use_ids) and item.oven_use_ids
 
     @api.multi
     def _compute_oven_in_use_ids(self):
@@ -228,7 +228,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def _compute_name(self):
         for item in self:
-            item.name = '{} {}'.format(item.out_lot_id.name, item.out_lot_id.product_id.display_name)
+            item.name = '{} {}'.format(item.out_lot_id.name, item.out_product_id.display_name)
 
     @api.model
     def create_out_lot(self):
@@ -401,6 +401,7 @@ class UnpelledDried(models.Model):
                 'label_durability_id': item.label_durability_id.id,
             })
             view_id = self.env.ref('dimabe_manufacturing.unpelled_dried_form_view')
+            new_process.create_out
             return {
                 "name": 'Nuevo Proceso',
                 "type": 'ir.actions.act_window',

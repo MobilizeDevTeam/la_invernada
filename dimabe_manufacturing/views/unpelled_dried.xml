@@ -19,7 +19,6 @@
                             name="finish_unpelled_dried"
                             type="object"
                             attrs="{'invisible':[('can_done','=',False)]}"
-                            confirm="¿Desea cerrar el lote actual?, el lote tomará todos los lotes de los cajones que se encuentren terminados"
                     />
                     <button string="Comenzar Nuevo Proceso"
                             type="object" class="oe_highlight" name="start_new_unpelled"
