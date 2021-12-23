@@ -772,7 +772,7 @@ class StockProductionLot(models.Model):
     @api.model
     def get_stock_quant(self):
         return self.quant_ids.filtered(
-            lambda a: a.location_id.name == 'Stock'
+            lambda a: a.location_id.usage == 'internal'
         )
 
     @api.multi

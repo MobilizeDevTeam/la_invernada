@@ -196,7 +196,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def _compute_in_lot_ids(self):
         for item in self:
-            item.in_lot_ids = item.oven_use_ids.mapped('used_lot_id')
+            item.in_lot_ids = item.oven_use_ids.fi.mapped('used_lot_id')
 
     @api.onchange('producer_id')
     def onchange_producer_id(self):
@@ -288,42 +288,37 @@ class UnpelledDried(models.Model):
     @api.multi
     def cancel_unpelled_dried(self):
         for item in self:
-            item.state = 'cancel'
-            item.oven_use_ids.mapped('dried_oven_ids').set_is_in_use(False)
+            item.write({
+                'state': 'cancel'
+            })
+            item.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped('dried_oven_ids').set_is_in_use(False)
 
     @api.multi
     def finish_unpelled_dried(self):
         for item in self:
             if item.out_lot_id.product_id != item.out_product_id:
-                item.out_lot_id.update({
+                item.out_lot_id.write({
                     'product_id': item.out_product_id.id
                 })
-            oven_use_to_close_ids = item.oven_use_ids.filtered(
-                lambda a: a.state == 'done'
-            )
-
-            for oven_use in oven_use_to_close_ids:
+            for oven_use in item.oven_use_ids.filtered(lambda a: a.state == 'done'):
                 oven_use_id = item.oven_use_ids.filtered(
-                    lambda a: not a.ready_to_close and len(a.dried_oven_ids) == 1 and
-                              a.dried_oven_ids in oven_use.dried_oven_ids
+                    lambda a: a.state not in ('done', 'cancel') and a.dried_oven_id
                 )
                 if oven_use_id:
                     raise models.ValidationError('el lote {} no ha sido terminado en el cajón {}.'
                                                  ' no se puede cerrar un lote en que se encuentre en '
                                                  'cajones completos (no mezclados con otros lotes) y que '
                                                  'se encuentren todavía en proceso'.format(
-                        oven_use_id.used_lot_id.name, oven_use_id.dried_oven_ids[0].name
+                        oven_use_id.used_lot_id.name, oven_use_id.dried_oven_id.name
                     ))
-                oven_use.used_lot_id.unpelled_state = 'done'
-
-            if not oven_use_to_close_ids:
+                oven_use.used_lot_id.write({
+                    'unpelled_state': 'done',
+                })
+            if not item.oven_use_ids.filtered(lambda a: a.state == 'done'):
                 raise models.ValidationError('no hay hornos listos para cerrar por procesar')
-
             if not item.out_serial_ids:
                 raise models.ValidationError('Debe agregar al menos una serie de salida al proceso')
-
             history_id = item.create_history()
-
             stock_move = self.env['stock.move'].create({
                 'name': item.out_lot_id.name,
                 'company_id': self.env.user.company_id.id,
@@ -335,10 +330,8 @@ class UnpelledDried(models.Model):
                 'quantity_done': item.total_out_weight,
                 'state': 'done',
             })
-
             consumed = []
-
-            for used_lot_id in oven_use_to_close_ids.mapped('used_lot_id'):
+            for used_lot_id in item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('used_lot_id'):
                 if used_lot_id.get_stock_quant().balance > 0:
                     consumed.append([0, 0, {
                         'lot_name': used_lot_id.name,
@@ -353,7 +346,6 @@ class UnpelledDried(models.Model):
                         'state': 'done',
                         'move_id': stock_move.id
                     }])
-
             self.env['stock.move.line'].create({
                 'lot_name': item.out_lot_id.name,
                 'consume_line_ids': consumed,
@@ -368,18 +360,16 @@ class UnpelledDried(models.Model):
                 'state': 'done',
                 'move_id': stock_move.id
             })
-
-            oven_use_to_close_ids.mapped('dried_oven_ids').set_is_in_use(False)
-
-            oven_use_to_close_ids.write({
+            item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('dried_oven_ids').set_is_in_use(False)
+            item.oven_use_ids.filtered(lambda a: a.state == 'done').write({
                 'history_id': history_id.id,
                 'unpelled_dried_id': None
             })
-
             item.create_out_lot()
-
             if not item.oven_use_ids:
-                item.state = 'draft'
+                item.write({
+                    'state': 'draft'
+                })
             item.out_lot_id.verify_without_lot()
             item.out_lot_id.update_kg(item.out_lot_id.id)
 
@@ -401,7 +391,6 @@ class UnpelledDried(models.Model):
                 'label_durability_id': item.label_durability_id.id,
             })
             view_id = self.env.ref('dimabe_manufacturing.unpelled_dried_form_view')
-            new_process.create_out
             return {
                 "name": 'Nuevo Proceso',
                 "type": 'ir.actions.act_window',
@@ -417,11 +406,9 @@ class UnpelledDried(models.Model):
 
     @api.multi
     def go_history(self):
-
         unpelled_dried_id = 'unpelled_dried_id' in self.env.context and self.env.context['unpelled_dried_id'] or False
         self.out_lot_id.verify_without_lot()
         self.out_lot_id.update_kg(self.out_lot_id.id)
-
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'dried.unpelled.history',
@@ -442,5 +429,5 @@ class UnpelledDried(models.Model):
             'name': f'Procesos Activos de {self.producer_id.name}',
             'views': [[self.env.ref('dimabe_manufacturing.unpelled_dried_tree_view').id, 'tree'], [False, 'form']],
             'target': 'fullscreen',
-            'domain': [('producer_id', '=', self.producer_id.id),('id','!=',self.id), ('state', '=', 'progress')]
+            'domain': [('producer_id', '=', self.producer_id.id), ('id', '!=', self.id), ('state', '=', 'progress')]
         }
