@@ -145,17 +145,17 @@ class UnpelledDried(models.Model):
     @api.multi
     def compute_can_done(self):
         for item in self:
-            item.can_done = all(oven.state == 'done' for oven in item.oven_use_ids) and item.oven_use_ids
+            item.can_done = all(oven.state in ['done','cancel'] for oven in item.oven_use_ids) and item.oven_use_ids
 
     @api.multi
     def _compute_oven_in_use_ids(self):
         for item in self:
-            item.oven_in_use_ids = item.oven_use_ids.mapped('dried_oven_ids')
+            item.oven_in_use_ids = item.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped('dried_oven_ids')
 
     @api.multi
     def _compute_used_lot_ids(self):
         for item in self:
-            item.used_lot_ids = item.oven_use_ids.mapped('used_lot_id')
+            item.used_lot_ids = item.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped('used_lot_id')
 
     @api.multi
     def _compute_total_pending_lot_count(self):
