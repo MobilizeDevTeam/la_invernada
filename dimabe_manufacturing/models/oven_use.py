@@ -32,6 +32,7 @@ class OvenUse(models.Model):
     used_lot_id = fields.Many2one(
         'stock.production.lot',
         'Lote a Secar',
+        domain=['unpelled_state', '=', 'draft'],
         required=True
     )
 
@@ -209,6 +210,10 @@ class OvenUse(models.Model):
             if item.finish_active_time == 0:
                 item.finish_active_time = item.finish_date.timestamp()
                 item.active_seconds += item.finish_active_time - item.init_active_time
+            for oven in item.oven_use_ids:
+                oven.used_lot_id.write({
+                    'unpelled_state': 'done'
+                })
             item.dried_oven_id.write({
                 'is_in_use': False
             })
@@ -237,3 +242,12 @@ class OvenUse(models.Model):
                 'is_in_use': False
             })
             return super(OvenUse, self).unlink()
+
+    @api.multi
+    def create(self, values):
+        res = super(OvenUse, self).create(values)
+        for r in res:
+            r.used_lot_id.write({
+                'unpelled_state': 'waiting'
+            })
+        return res

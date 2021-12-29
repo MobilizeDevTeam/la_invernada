@@ -82,16 +82,16 @@
                                 <button string="pausar horno"
                                         name="pause_process"
                                         type="object"
-                                        attrs="{'invisible': ['|',('state','in',['done','pause','cancel']),('init_date','=',False)]}"
+                                        attrs="{'invisible': ['|',('state','in',['done','pause','cancel']),('init_date','=',False)],'column_invisible': [('parent.state','!=','progress')]}"
                                 />
                                 <button string="reanudar horno"
                                         name="resume_process"
                                         type="object"
                                         attrs="{'invisible': [('state','!=','pause')]}"/>
-                                <button name="finish_process" attrs="{'invisible':[('state','!=','in_process')]}"
+                                <button name="finish_process" attrs="{'invisible':[('state','!=','in_process')],'column_invisible': [('parent.state','!=','progress')]}"
                                         type="object" string="Terminar Horno"/>
                                 <button name="cancel_process" type="object" string="Cancelar Horno"
-                                        attrs="{'invisible': [('state','in',('done','draft','cancel'))]}"/>
+                                        attrs="{'invisible': [('state','in',('done','draft','cancel'))],'column_invisible': [('parent.state','!=','progress')]}"/>
                                 <button string="Imprimir"
                                         attrs="{'invisible':[('used_lot_id','=',False)]}"
                                         name="print_oven_label"

@@ -194,17 +194,18 @@ class DriedUnpelledHistory(models.Model):
     @api.multi
     def _compute_oven_use_data(self):
         for item in self:
-            for oven_use in item.oven_use_ids:
-                if (item.init_date and item.init_date > oven_use.init_date) or not item.init_date:
-                    item.init_date = oven_use.init_date
-                    item.finish_date = oven_use.finish_date
-                    item.active_time = oven_use.active_time
+            if self.is_old_version:
+                for oven_use in item.oven_use_ids:
+                    if (item.init_date and item.init_date > oven_use.init_date) or not item.init_date:
+                        item.init_date = oven_use.init_date
+                        item.finish_date = oven_use.finish_date
+                        item.active_time = oven_use.active_time
 
     @api.multi
     def _compute_dried_oven_ids(self):
         for item in self:
             print()
-            item.dried_oven_ids = item.oven_use_ids.mapped('dried_oven_id')
+            item.dried_oven_ids = item.oven_use_ids.filtered(lambda x: x.state == 'done').mapped('dried_oven_id')
 
     @api.multi
     def _compute_picking_type_id(self):

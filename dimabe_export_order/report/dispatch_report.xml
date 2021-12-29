@@ -1909,91 +1909,93 @@
                             </t>
                             <t t-elif="(not d.picking_real_id and d.picking_principal_id and d.is_child_dispatch) or (d.picking_principal_id.id == d.id)">
                                 <t t-foreach="d.picking_principal_id.assigned_pallet_ids" t-as="p">
-                                    <tr>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="p.lot_serial_ids[0].product_id.name"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="p.lot_serial_ids[0].product_id.type_product"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="d.picking_principal_id.dispatch_line_ids.filtered(lambda a:a.product_id.id == p.product_id.id).sale_id.name"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-field="p.name"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-field="p.mapped('lot_serial_ids').mapped('stock_production_lot_id').name"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="p.lot_serial_ids[0].packaging_date.strftime('%d-%b-%y')"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="p.lot_serial_ids[0].best_before_date.strftime('%d-%b-%y')"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="len(p.lot_serial_ids.filtered(lambda a: a.reserved_to_stock_picking_id.id == d.picking_principal_id.id))"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.filtered(lambda a : a.pallet_id.id == p.id).mapped('display_weight'))"/>
-                                        </td>
-                                        <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                            <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.filtered(lambda a : a.pallet_id.id == p.id).mapped('gross_weight'))"/>
-                                        </td>
-                                    </tr>
-                                    <t t-if="d.picking_principal_id.packing_list_ids.filtered(lambda a : not a.pallet_id) and p.id == d.picking_principal_id.assigned_pallet_ids[-1].id">
-                                        <t t-foreach="d.picking_principal_id.packing_list_ids.filtered(lambda a : not a.pallet_id)"
-                                           t-as="s">
+                                    <t t-if="len(p.lot_serial_ids) > 0">
+                                        <tr>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="p.lot_serial_ids[0].product_id.name"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="p.lot_serial_ids[0].product_id.type_product"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="d.picking_principal_id.dispatch_line_ids.filtered(lambda a:a.product_id.id == p.product_id.id).sale_id.name"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-field="p.name"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-field="p.mapped('lot_serial_ids').mapped('stock_production_lot_id').name"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="p.lot_serial_ids[0].packaging_date.strftime('%d-%b-%y')"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="p.lot_serial_ids[0].best_before_date.strftime('%d-%b-%y')"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="len(p.lot_serial_ids.filtered(lambda a: a.reserved_to_stock_picking_id.id == d.picking_principal_id.id))"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.filtered(lambda a : a.pallet_id.id == p.id).mapped('display_weight'))"/>
+                                            </td>
+                                            <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.filtered(lambda a : a.pallet_id.id == p.id).mapped('gross_weight'))"/>
+                                            </td>
+                                        </tr>
+                                        <t t-if="d.picking_principal_id.packing_list_ids.filtered(lambda a : not a.pallet_id) and p.id == d.picking_principal_id.assigned_pallet_ids[-1].id">
+                                            <t t-foreach="d.picking_principal_id.packing_list_ids.filtered(lambda a : not a.pallet_id)"
+                                               t-as="s">
+                                                <tr>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-esc="s.stock_product_id.name"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-esc="s.stock_product_id.type_product"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-field="d.picking_principal_id.custom_dispatch_line_ids.filtered(lambda a: a.product_id.id == p.product_id.id).dispatch_id.origin"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-field="p.name"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-field="s.stock_production_lot_id.name"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-esc="s.packaging_date.strftime('%d-%b-%y')"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-esc="s.best_before_date.strftime('%d-%b-%y')"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        1
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-esc="'%.2f' %s.display_weight"/>
+                                                    </td>
+                                                    <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
+                                                        <span t-esc="'%.2f' %s.gross_weight"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-if="p.id == d.picking_principal_id.assigned_pallet_ids[-1].id">
                                             <tr>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-esc="s.stock_product_id.name"/>
+                                                <td colspan="7"
+                                                    style="border:solid 1px black;text-align:right;padding-right:10px;">
+                                                    Total
                                                 </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-esc="s.stock_product_id.type_product"/>
+                                                <td style="text-align:center;">
+                                                    <span t-esc="len(d.picking_principal_id.packing_list_ids)"/>
                                                 </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-field="d.picking_principal_id.custom_dispatch_line_ids.filtered(lambda a: a.product_id.id == p.product_id.id).dispatch_id.origin"/>
+                                                <td style="border:solid 1px black;text-align:center;margin_top:0px;margin_bottom;0px;margin_left:0px;margin_right:0px;">
+                                                    <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.mapped('display_weight'))"/>
                                                 </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-field="p.name"/>
-                                                </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-field="s.stock_production_lot_id.name"/>
-                                                </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-esc="s.packaging_date.strftime('%d-%b-%y')"/>
-                                                </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-esc="s.best_before_date.strftime('%d-%b-%y')"/>
-                                                </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    1
-                                                </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-esc="'%.2f' %s.display_weight"/>
-                                                </td>
-                                                <td style="border:solid 1px black;text-align:center;padding-top:0px;padding-bottom:0px">
-                                                    <span t-esc="'%.2f' %s.gross_weight"/>
+                                                <td style="border:solid 1px black;text-align:center;margin_top:0px;margin_bottom;0px;margin_left:0px;margin_right:0px;">
+                                                    <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.mapped('gross_weight'))"/>
                                                 </td>
                                             </tr>
                                         </t>
-                                    </t>
-                                    <t t-if="p.id == d.picking_principal_id.assigned_pallet_ids[-1].id">
-                                        <tr>
-                                            <td colspan="7"
-                                                style="border:solid 1px black;text-align:right;padding-right:10px;">
-                                                Total
-                                            </td>
-                                            <td style="text-align:center;">
-                                                <span t-esc="len(d.picking_principal_id.packing_list_ids)"/>
-                                            </td>
-                                            <td style="border:solid 1px black;text-align:center;margin_top:0px;margin_bottom;0px;margin_left:0px;margin_right:0px;">
-                                                <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.mapped('display_weight'))"/>
-                                            </td>
-                                            <td style="border:solid 1px black;text-align:center;margin_top:0px;margin_bottom;0px;margin_left:0px;margin_right:0px;">
-                                                <span t-esc="'%.2f' %sum(d.picking_principal_id.packing_list_ids.mapped('gross_weight'))"/>
-                                            </td>
-                                        </tr>
                                     </t>
                                 </t>
                             </t>
