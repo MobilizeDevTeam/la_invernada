@@ -210,10 +210,9 @@ class OvenUse(models.Model):
             if item.finish_active_time == 0:
                 item.finish_active_time = item.finish_date.timestamp()
                 item.active_seconds += item.finish_active_time - item.init_active_time
-            for oven in item.oven_use_ids:
-                oven.used_lot_id.write({
-                    'unpelled_state': 'done'
-                })
+            item.used_lot_id.write({
+                'unpelled_state': 'done'
+            })
             item.dried_oven_id.write({
                 'is_in_use': False
             })
