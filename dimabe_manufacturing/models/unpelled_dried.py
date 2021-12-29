@@ -145,7 +145,8 @@ class UnpelledDried(models.Model):
     @api.multi
     def compute_can_done(self):
         for item in self:
-            item.can_done = all(oven.state in ['done','cancel'] for oven in item.oven_use_ids) and item.oven_use_ids
+            item.can_done = all(oven.state == 'done' for oven in item.oven_use_ids) and item.oven_use_ids or not all(
+                oven.state == 'cancel' for oven in item.oven_use_ids)
 
     @api.multi
     def _compute_oven_in_use_ids(self):
@@ -171,7 +172,8 @@ class UnpelledDried(models.Model):
     @api.multi
     def _compute_can_close(self):
         for item in self:
-            item.can_close = any(oven.state == 'done' for oven in item.oven_use_ids)
+            item.can_close = any(oven.state == 'done' for oven in item.oven_use_ids) or all(
+                oven.state == 'cancel' for oven in item.oven_use_ids)
 
     @api.multi
     def _compute_performance(self):
