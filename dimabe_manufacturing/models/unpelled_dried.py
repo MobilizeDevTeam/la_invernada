@@ -143,6 +143,17 @@ class UnpelledDried(models.Model):
     can_done = fields.Boolean('Se puede finalizar', compute='compute_can_done')
 
     @api.multi
+    @api.onchange('oven_use_ids')
+    def onchange_oven_use(self):
+        dried_id = self.env['dried.oven']
+        for dried in self.oven_use_ids:
+            if dried_id :
+                if dried_id in self.oven_use_ids.mapped('dried_oven_id'):
+                    raise models.UserError(f'No puede agregar al horno {dried.dried_oven_id.name} el lote {dried.used_lot_id.name}')
+            dried_id = dried.dried_oven_id
+
+
+    @api.multi
     def compute_can_done(self):
         for item in self:
             item.can_done = all(oven.state == 'done' for oven in item.oven_use_ids) and item.oven_use_ids or not all(

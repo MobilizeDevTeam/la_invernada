@@ -137,7 +137,6 @@ class OvenUse(models.Model):
 
     @api.multi
     def unlink(self):
-
         self.mapped('dried_oven_ids').write({
             'is_in_use': False
         })
@@ -239,6 +238,9 @@ class OvenUse(models.Model):
                 raise models.UserError('No se puede eliminar un registro si el horno esta finalizado')
             item.dried_oven_id.write({
                 'is_in_use': False
+            })
+            item.used_lot_id.write({
+                'unpelled_state': 'draft'
             })
             return super(OvenUse, self).unlink()
 
