@@ -4,4 +4,7 @@
         <field name="name">Desarrollador</field>
         <field name="category_id" ref="base.module_category_produccion"/>
     </record>
+    <record id="oven_manager" model="res.groups">
+        <field name="name">Administrador de Hornos</field>
+    </record>
 </odoo>
