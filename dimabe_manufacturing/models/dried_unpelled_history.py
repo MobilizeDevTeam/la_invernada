@@ -1,7 +1,7 @@
 from odoo import fields, models, api
 from odoo.addons import decimal_precision as dp
 import datetime
-
+from ..helpers import date_helper
 
 class DriedUnpelledHistory(models.Model):
     _name = 'dried.unpelled.history'
@@ -168,7 +168,11 @@ class DriedUnpelledHistory(models.Model):
 
     @api.multi
     def test(self):
-        print(self.oven_use_ids.read())
+        total_active_seconds = round(sum(oven.active_seconds for oven in self.oven_use_ids) / len(self.oven_use_ids))
+        hours = total_active_seconds // 3600
+        minutes = (total_active_seconds % 3600) // 60
+        seconds = total_active_seconds % 60
+        print(f'{hours}:{minutes}:{seconds}')
 
     @api.multi
     def compute_can_adjust(self):
@@ -198,12 +202,19 @@ class DriedUnpelledHistory(models.Model):
     @api.multi
     def _compute_oven_use_data(self):
         for item in self:
-            if self.is_old_version:
+            if item.is_old_version:
                 for oven_use in item.oven_use_ids:
                     if (item.init_date and item.init_date > oven_use.init_date) or not item.init_date:
                         item.init_date = oven_use.init_date
                         item.finish_date = oven_use.finish_date
                         item.active_time = oven_use.active_time
+            else:
+                total_active_seconds = round(
+                    sum(oven.active_seconds for oven in item.oven_use_ids) / len(item.oven_use_ids))
+                item.active_time = date_helper.int_to_time(total_active_seconds)
+                item.init_date = item.oven_use_ids[0].init_date
+                item.finish_date = item.oven_use_ids[0].finish_date
+
     @api.multi
     def _compute_dried_oven_ids(self):
         for item in self:
