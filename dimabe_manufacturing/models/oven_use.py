@@ -153,7 +153,10 @@ class OvenUse(models.Model):
             self.mapped('dried_oven_ids').write({
                 'is_in_use': False
             })
-            return super(OvenUse, self).unlink()
+            unpelled_dried = self.env['unpelled.dried'].search([('id','=',self.unpelled_dried_id.id)])
+            res = super(OvenUse, self).unlink()
+            print(unpelled_dried)
+            return res
         else:
             raise models.ValidationError(
                 'Su usuario no cuenta con los permisos para eliminar horno de este proceso , ponerse en contacto con la persona a cargo')

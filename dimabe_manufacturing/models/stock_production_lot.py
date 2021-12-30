@@ -773,10 +773,15 @@ class StockProductionLot(models.Model):
             })
 
     @api.model
-    def get_stock_quant(self):
-        return self.quant_ids.filtered(
-            lambda a: a.location_id.usage == 'internal'
-        )
+    def get_stock_quant(self, location_id=None):
+        if self.location_id:
+            stock_quant = self.quant_ids.filtered(
+                lambda a: a.location_id.id == location_id)
+            return None if not stock_quant else stock_quant
+        else:
+            return self.quant_ids.filtered(
+                lambda a: a.location_id.name == 'Stock'
+            )
 
     @api.multi
     def delete_all_serial(self):

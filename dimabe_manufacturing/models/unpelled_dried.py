@@ -333,7 +333,7 @@ class UnpelledDried(models.Model):
             })
             consumed = []
             for used_lot_id in item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('used_lot_id'):
-                if used_lot_id.get_stock_quant(self.dest_location_id.id).balance > 0:
+                if used_lot_id.get_stock_quant().balance > 0:
                     consumed.append([0, 0, {
                         'lot_name': used_lot_id.name,
                         'reference': used_lot_id.name,
