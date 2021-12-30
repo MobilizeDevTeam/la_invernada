@@ -333,20 +333,22 @@ class UnpelledDried(models.Model):
             })
             consumed = []
             for used_lot_id in item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('used_lot_id'):
-                if used_lot_id.get_stock_quant().balance > 0:
-                    consumed.append([0, 0, {
-                        'lot_name': used_lot_id.name,
-                        'reference': used_lot_id.name,
-                        'product_id': used_lot_id.product_id.id,
-                        'location_id': used_lot_id.get_stock_quant().location_id.id,
-                        'location_dest_id': item.origin_location_id.id,
-                        'qty_done': used_lot_id.get_stock_quant().balance,
-                        'product_uom_qty': 0,
-                        'product_uom_id': used_lot_id.product_id.uom_id.id,
-                        'lot_id': used_lot_id.id,
-                        'state': 'done',
-                        'move_id': stock_move.id
-                    }])
+                quant_id = used_lot_id.get_stock_quant()
+                if quant_id:
+                    if used_lot_id.get_stock_quant().balance > 0:
+                        consumed.append([0, 0, {
+                            'lot_name': used_lot_id.name,
+                            'reference': used_lot_id.name,
+                            'product_id': used_lot_id.product_id.id,
+                            'location_id': used_lot_id.get_stock_quant().location_id.id,
+                            'location_dest_id': item.origin_location_id.id,
+                            'qty_done': used_lot_id.get_stock_quant().balance,
+                            'product_uom_qty': 0,
+                            'product_uom_id': used_lot_id.product_id.uom_id.id,
+                            'lot_id': used_lot_id.id,
+                            'state': 'done',
+                            'move_id': stock_move.id
+                        }])
             self.env['stock.move.line'].create({
                 'lot_name': item.out_lot_id.name,
                 'consume_line_ids': consumed,
