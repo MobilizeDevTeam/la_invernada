@@ -31,8 +31,8 @@
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
         'security/groups.xml',
+        'security/ir.model.access.csv',
         'data/update_data_from_upgrade.xml',
         'views/confirm_order_reserved.xml',
         'views/confirm_principal_order.xml',
