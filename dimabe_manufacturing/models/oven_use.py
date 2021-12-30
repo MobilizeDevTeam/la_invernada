@@ -119,6 +119,18 @@ class OvenUse(models.Model):
         default=lambda self: 'draft' if not self.finish_date else 'done')
 
     @api.multi
+    @api.onchange('dried_oven_id')
+    def onchange_oven(self):
+        res = {
+            "domain": {
+                "dried_oven_id": [
+                    ('id', 'not in', self.unpelled_dried_id.oven_use_ids.mapped('dried_oven_id').ids),
+                    ('is_in_use', '=', False)]
+            }
+        }
+        return res
+
+    @api.multi
     def _compute_name(self):
         for item in self:
             if len(item.dried_oven_ids) > 0:
@@ -138,7 +150,6 @@ class OvenUse(models.Model):
     @api.multi
     def unlink(self):
         if self.env.user in self.env.ref('dimabe_manufacturing.oven_manger').users:
-
             self.mapped('dried_oven_ids').write({
                 'is_in_use': False
             })
@@ -247,7 +258,9 @@ class OvenUse(models.Model):
             item.used_lot_id.write({
                 'unpelled_state': 'draft'
             })
-            return super(OvenUse, self).unlink()
+            res = super(OvenUse, self).unlink()
+            print(self.unpelled_dried_id.oven_use_ids)
+            return res
 
     @api.multi
     def create(self, values):
