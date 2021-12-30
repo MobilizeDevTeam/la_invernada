@@ -137,10 +137,15 @@ class OvenUse(models.Model):
 
     @api.multi
     def unlink(self):
-        self.mapped('dried_oven_ids').write({
-            'is_in_use': False
-        })
-        return super(OvenUse, self).unlink()
+        if self.env.user in self.env.ref('dimabe_manufacturing.oven_manger').users:
+
+            self.mapped('dried_oven_ids').write({
+                'is_in_use': False
+            })
+            return super(OvenUse, self).unlink()
+        else:
+            raise models.ValidationError(
+                'Su usuario no cuenta con los permisos para eliminar horno de este proceso , ponerse en contacto con la persona a cargo')
 
     @api.multi
     def init_process(self):
