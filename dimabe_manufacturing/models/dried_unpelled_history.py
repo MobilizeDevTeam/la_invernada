@@ -167,6 +167,10 @@ class DriedUnpelledHistory(models.Model):
     )
 
     @api.multi
+    def test(self):
+        print(self.oven_use_ids.read())
+
+    @api.multi
     def compute_can_adjust(self):
         for item in self:
             item.can_adjust = item.out_serial_sum != item.total_out_weight
@@ -200,7 +204,6 @@ class DriedUnpelledHistory(models.Model):
                         item.init_date = oven_use.init_date
                         item.finish_date = oven_use.finish_date
                         item.active_time = oven_use.active_time
-
     @api.multi
     def _compute_dried_oven_ids(self):
         for item in self:

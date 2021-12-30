@@ -64,7 +64,7 @@
                         <field name="producer_id" attrs="{'readonly': [('state','in',[('done','progress')])]}"/>
                         <field name="product_in_id" attrs="{'readonly':[('state','in','done','progress')]}"/>
                         <field name="oven_use_ids" attrs="{'readonly':[('state','=','done')]}">
-                            <tree editable="bottom" create="true" delete="true" decoration-muted="state == 'cancel'">
+                            <tree editable="bottom" create="true" decoration-muted="state == 'cancel'">
                                 <field name="init_active_time" invisible="1"/>
                                 <field name="finish_active_time" invisible="1"/>
                                 <field name="state" invisible="1"/>
