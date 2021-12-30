@@ -42,7 +42,6 @@
                             <field name="name" placeholder="Nombre" readonly="1"/>
                         </h1>
                         <group>
-                            <button type="object" name="test" string="Prueba"/>
                             <field name="can_adjust" invisible="1"/>
                             <field name="total_in_weight"/>
                             <field name="total_out_weight"/>
