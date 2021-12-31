@@ -46,9 +46,6 @@
                 </td>
               </tr>
             </table>
-            <t t-if="dried_oven_id.id != o.dried_oven_ids[len(o.dried_oven_ids) - 1].id">
-              <p style="page-break-after:always;"></p>
-            </t>
           </t>
         </t>
       </div>
