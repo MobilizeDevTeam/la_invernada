@@ -23,8 +23,6 @@
                     <button string="Comenzar Nuevo Proceso"
                             type="object" class="oe_highlight" name="start_new_unpelled"
                             attrs="{'invisible': [('state','=','done')]}"/>
-                    <button string="Bloquear Lotes de Entrada" type="object" class="oe_highlight" name="lock_in_lot_ids"
-                            attrs="{'invisible': [('state','!=','progress')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,progress,done"/>
                 </header>
 
@@ -64,7 +62,8 @@
                         <field name="history_ids" invisible="1"/>
                         <field name="producer_id" attrs="{'readonly': [('state','in',[('done','progress')])]}"/>
                         <field name="product_in_id" attrs="{'readonly':[('state','in','done','progress')]}"/>
-                        <field name="oven_use_ids" attrs="{'readonly':[('state','=','done')]}">
+                        <field name="locked" invisible="1"/>
+                        <field name="oven_use_ids" attrs="{'readonly':['|',('state','=','done'),('locked','=',True)]}">
                             <tree editable="bottom" create="true" delete="true" decoration-muted="state == 'cancel'">
                                 <field name="init_active_time" invisible="1"/>
                                 <field name="finish_active_time" invisible="1"/>
@@ -80,6 +79,10 @@
                                         name="init_process"
                                         type="object"
                                 />
+                                <field name="lot_locked" invisible="1"/>
+                                <button string="Bloquear Lote" attrs="{'invisible':[('lot_locked','=',True),('used_lot_id','!=',False)]}"
+                                        type="object" name="do_lot_locked"
+                                        confirm="Al bloquear este lote no se aparecera en los demas procesos compatibles ¿Esta seguro de continuar?"/>
                                 <button string="pausar horno"
                                         name="pause_process"
                                         type="object"

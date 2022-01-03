@@ -117,6 +117,15 @@ class OvenUse(models.Model):
                    ('in_process', 'En Proceso'), ('cancel', 'Cancelado'), ('done', 'Finalizado')],
         default=lambda self: 'draft' if not self.finish_date else 'done')
 
+    lot_locked = fields.Boolean(string='Lote Bloqueado',related='used_lot_id.is_unpelled_locked')
+
+    @api.multi
+    def do_lot_locked(self):
+        for item in self:
+            item.used_lot_id.write({
+                'is_unpelled_locked': True
+            })
+
     @api.multi
     @api.onchange('dried_oven_id')
     def onchange_oven(self):
