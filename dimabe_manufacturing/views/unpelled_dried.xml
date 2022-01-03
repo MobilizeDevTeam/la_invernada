@@ -72,7 +72,7 @@
                                 <field name="state" invisible="1"/>
                                 <field name="dried_oven_id" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="used_lot_id"
-                                       domain="[('producer_id','=',parent.producer_id),('product_id','=',parent.product_in_id),('balance','>',0)]"/>
+                                       domain="[('producer_id','=',parent.producer_id),('product_id','=',parent.product_in_id),('balance','>',0),('is_unpelled_locked','=',False)]"/>
                                 <field name="init_date" invisible="1"/>
                                 <field name="finish_date" invisible="1"/>
                                 <field name="active_seconds" widget="time_live"/>

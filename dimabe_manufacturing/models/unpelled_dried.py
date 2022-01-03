@@ -440,7 +440,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def lock_in_lot_ids(self):
         for item in self:
-            for lot in item.oven_use_ids.mapped('lot_id'):
+            for lot in item.oven_use_ids.mapped('used_lot_id'):
                 lot.write({
                     'is_unpelled_locked': True
                 })
