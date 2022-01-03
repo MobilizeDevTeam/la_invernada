@@ -134,7 +134,7 @@
             <div class="page">
                 <t t-foreach="docs" t-as="d">
                     <t t-foreach="d.stock_production_lot_serial_ids" t-as="lot_serial_id">
-                        <div style="text-align:right;font-size:8px;">
+                        <div style="text-align:right;font-size:7px;">
                             <t t-if="'Con' in lot_serial_id.product_id.get_species()">
                                 <strong>CONTAINS INSHELL WALNUT - CONTIENE NUEZ CON CÁSCARA</strong>
                             </t>
