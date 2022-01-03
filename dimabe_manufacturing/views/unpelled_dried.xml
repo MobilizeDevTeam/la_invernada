@@ -45,7 +45,6 @@
                                 type="object"
                                 icon="fa-history"
                                 context="{'unpelled_dried_id': id}"
-                                attrs="{'invisible':[('history_ids','=',[])]}"
                         />
                     </div>
                     <div class="oe_title">
