@@ -258,6 +258,8 @@ class StockProductionLot(models.Model):
 
     change_best = fields.Boolean(string='¿Desea cambiar fecha de consumir preferentemente antes de?')
 
+    is_unpelled_locked = fields.Boolean(string='Bloqueado')
+
     def do_change_date_best(self):
         for item in self:
             wiz = self.env['change.date.lot'].create({

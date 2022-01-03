@@ -436,3 +436,11 @@ class UnpelledDried(models.Model):
     def print_all_out_serial(self):
         return self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
             .report_action(self.out_lot_id)
+
+    @api.multi
+    def lock_in_lot_ids(self):
+        for item in self:
+            for lot in item.oven_use_ids.mapped('lot_id'):
+                lot.write({
+                    'is_unpelled_locked': True
+                })

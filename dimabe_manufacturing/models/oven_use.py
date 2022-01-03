@@ -32,7 +32,6 @@ class OvenUse(models.Model):
     used_lot_id = fields.Many2one(
         'stock.production.lot',
         'Lote a Secar',
-        domain=['unpelled_state', '=', 'draft'],
         required=True
     )
 
