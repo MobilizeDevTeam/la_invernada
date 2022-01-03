@@ -144,7 +144,8 @@ class OvenUse(models.Model):
                     ('is_in_use', '=', False)],
                 'used_lot_id': [
                     ('id', 'not in', self.env['oven.use'].search(
-                        [('state', '=', 'draft'), ('unpelled_dried_id', '!=', self.unpelled_dried_id.id)]).mapped(
+                        [('unpelled_dried_id', '!=', self.unpelled_dried_id.id),
+                         ('unpelled_dried_id.in_product_id.id', '=', self.unpelled_dried_id.in_product_id.id)]).mapped(
                         'used_lot_id').ids),
                     ('producer_id', '=', self.unpelled_dried_id.producer_id.id),
                     ('product_id', '=', self.unpelled_dried_id.product_in_id.id),
