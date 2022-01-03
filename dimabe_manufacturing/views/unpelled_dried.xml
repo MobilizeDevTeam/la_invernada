@@ -69,8 +69,9 @@
                                 <field name="finish_active_time" invisible="1"/>
                                 <field name="state" invisible="1"/>
                                 <field name="dried_oven_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="used_lot_ids" invisible="1"/>
                                 <field name="used_lot_id"
-                                       domain="[('producer_id','=',parent.producer_id),('product_id','=',parent.product_in_id),('balance','>',0),('is_unpelled_locked','=',False)]"/>
+                                       domain="[('producer_id','=',parent.producer_id),('product_id','=',parent.product_in_id),('balance','>',0),('unpelled_state','=','draft'),'|',('id','in',used_lot_ids)]"/>
                                 <field name="init_date" invisible="1"/>
                                 <field name="finish_date" invisible="1"/>
                                 <field name="active_seconds" widget="time_live"/>
@@ -80,10 +81,6 @@
                                         type="object"
                                 />
                                 <field name="lot_locked" invisible="1"/>
-                                <button string="Bloquear Lote"
-                                        attrs="{'invisible':['&amp;','|',('lot_locked','=',True),('used_lot_id','=',False),('state','=','done')]}"
-                                        type="object" name="do_lot_locked"
-                                        confirm="Al bloquear este lote no se aparecera en los demas procesos compatibles ¿Esta seguro de continuar?"/>
                                 <button string="pausar horno"
                                         name="pause_process"
                                         type="object"

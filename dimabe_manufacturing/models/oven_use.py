@@ -62,7 +62,7 @@ class OvenUse(models.Model):
     dried_oven_id = fields.Many2one(
         'dried.oven',
         string='Horno',
-        domain=[('is_in_use', '=', False)],
+        domain=[('state', '=', 'free')],
         required=True
     )
 
@@ -117,7 +117,14 @@ class OvenUse(models.Model):
                    ('in_process', 'En Proceso'), ('cancel', 'Cancelado'), ('done', 'Finalizado')],
         default=lambda self: 'draft' if not self.finish_date else 'done')
 
-    lot_locked = fields.Boolean(string='Lote Bloqueado',related='used_lot_id.is_unpelled_locked')
+    lot_locked = fields.Boolean(string='Lote Bloqueado', related='used_lot_id.is_unpelled_locked')
+
+    used_lot_ids = fields.Many2many('stock.production.lot',compute='compute_used_lot_ids')
+
+    @api.multi
+    def compute_used_lot_ids(self):
+        for item in self:
+            item.used_lot_ids = item.unpelled_dried_id.in_lot_ids
 
     @api.multi
     def do_lot_locked(self):
@@ -161,7 +168,7 @@ class OvenUse(models.Model):
             self.mapped('dried_oven_ids').write({
                 'is_in_use': False
             })
-            unpelled_dried = self.env['unpelled.dried'].search([('id','=',self.unpelled_dried_id.id)])
+            unpelled_dried = self.env['unpelled.dried'].search([('id', '=', self.unpelled_dried_id.id)])
             res = super(OvenUse, self).unlink()
             print(unpelled_dried)
             return res
@@ -185,6 +192,7 @@ class OvenUse(models.Model):
             item.init_active_time = item.init_date.timestamp()
             item.unpelled_dried_id.state = 'progress'
             item.dried_oven_id.write({
+                'state': 'in_use',
                 'is_in_use': True
             })
             item.used_lot_id.unpelled_state = 'drying'
@@ -277,6 +285,9 @@ class OvenUse(models.Model):
     def create(self, values):
         res = super(OvenUse, self).create(values)
         for r in res:
+            r.dried_oven_id.write({
+                'state': 'waiting'
+            })
             r.used_lot_id.write({
                 'unpelled_state': 'waiting'
             })
