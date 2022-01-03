@@ -240,12 +240,6 @@
                                         <span t-esc="res_company.name"/>
                                     </div>
                                     <div style="text-align:center;">
-                                        <img
-                                                t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (d.get_full_url(), 'Code128',lot_serial_id.serial_number,550, 45)"
-                                        />
-                                        <span t-field="lot_serial_id.serial_number"/>
-                                    </div>
-                                    <div style="text-align:center;">
                                         PRODUCT OF CHILE - PRODUCTO DE CHILE
                                     </div>
                                 </td>
