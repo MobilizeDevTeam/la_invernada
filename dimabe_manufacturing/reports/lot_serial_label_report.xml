@@ -100,11 +100,13 @@
                                 </div>
                                 <div>
                                     NET WEIGHT (PESO NETO):
-                                    <span t-esc="round(lot_serial_id.display_weight,1)"/> kgs.
+                                    <span t-esc="round(lot_serial_id.display_weight,1)"/>
+                                    kgs.
                                 </div>
                                 <div>
                                     GROSS WEIGHT (PESO BRUTO):
-                                    <span t-esc="round(lot_serial_id.gross_weight,1)"/> kgs.
+                                    <span t-esc="round(lot_serial_id.gross_weight,1)"/>
+                                    kgs.
                                 </div>
                                 <div>
                                     EXPORTED BY (EXPORTADO POR):
@@ -123,6 +125,139 @@
                         </tr>
                     </table>
                     <p style="page-break-after:avoid;"/>
+                </t>
+            </div>
+        </t>
+    </template>
+    <template id="report_stock_production_lot_serial_label_all">
+        <t t-call="web.html_container">
+            <div class="page">
+                <t t-foreach="docs" t-as="d">
+                    <t t-foreach="d.lot_serial_ids" t-as="lot_serial_id">
+                        <div style="text-align:right;font-size:8px;">
+                            <t t-if="'Con' in lot_serial_id.product_id.get_species()">
+                                <strong>CONTAINS INSHELL WALNUT - CONTIENE NUEZ CON CÁSCARA</strong>
+                            </t>
+                            <t t-elif="'Sin' in lot_serial_id.product_id.get_species()">
+                                <strong>CONTAINS SHELLED WALNUT - CONTIENE NUEZ SIN CÁSCARA</strong>
+                            </t>
+                            <t t-else="">
+                                <strong>CONTAINS WALNUT - CONTIENE NUEZ</strong>
+                            </t>
+                        </div>
+                        <table style="font-size:14px;">
+                            <tr>
+                                <th style="border-top: solid 1px;border-bottom:solid 1px;" colspan="2">
+                                    <t t-if="lot_serial_id.product_id.label_name">
+                                        <span t-field="lot_serial_id.product_id.label_name"/>
+                                    </t>
+                                    <t t-if="not lot_serial_id.product_id.label_name">
+                                        <span t-field="lot_serial_id.product_id.display_name"/>
+                                    </t>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td style="border-right:solid 1px;border-bottom:solid 1px;">
+                                    <div>GROWER/PRODUCTOR:</div>
+                                    <div>
+                                        <span t-field="lot_serial_id.producer_id.name"/>
+                                    </div>
+                                    <div>CSG:
+                                        <span t-field="lot_serial_id.producer_id.sag_code"/>
+                                    </div>
+                                    <div>PROVINCE/PROVINCIA:
+                                        <span t-esc="lot_serial_id.producer_id.state_id_address.name"/>
+                                    </div>
+                                    <div>TOWNSHIP/COMUNA:
+                                        <span t-esc="lot_serial_id.producer_id.city_address"/>
+                                    </div>
+                                    <div>REGIÓN:
+                                        <span t-esc="lot_serial_id.producer_id.region_address_id_address.name"/>
+                                    </div>
+                                </td>
+                                <td style="border-bottom:solid 1px;">
+                                    <div>PACKED BY/EMBALADO POR</div>
+                                    <div>
+                                        <span t-esc="res_company.name"/>
+                                    </div>
+                                    <div>CSP:
+                                        <span t-esc="res_company.sag_code"/>
+                                    </div>
+                                    <div>PROVINCE/PROVINCIA:
+                                        <span t-esc="res_company.state_id.name"/>
+                                    </div>
+                                    <div>TOWNSHIP/COMUNA:
+                                        <span t-esc="res_company.city"/>
+                                    </div>
+                                    <div>REGIÓN:
+                                        <span t-esc="res_company.region_address_id.name"/>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <div>
+                                        VARIETY (VARIEDAD):
+                                        <span t-esc="lot_serial_id.product_variety"/>
+                                    </div>
+                                    <div>
+                                        CROP (AÑO DE COSECHA):
+                                        <span t-esc="lot_serial_id.harvest"/>
+                                    </div>
+                                    <div>
+                                        PACKAGING DATE (FECHA DE ENVASADO):
+                                        <span t-esc="lot_serial_id.packaging_date"/>
+                                    </div>
+                                    <div>
+                                        BEST BEFORE DATE (CONSUMIR PREFERENTEMENTE ANTES DE):
+                                        <t t-if="lot_serial_id.best_before_date_new">
+                                            <span t-esc="lot_serial_id.best_before_date_new"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-esc="lot_serial_id.best_before_date"/>
+                                        </t>
+
+                                    </div>
+                                    <div>
+                                        TRACE CODE (CÓDIGO De TRAZABILIDAD):
+                                        <t t-if="lot_serial_id.production_id.stock_picking_id.name">
+                                            <span t-field="lot_serial_id.production_id.stock_picking_id.origin"/>
+                                        </t>
+                                        <t t-elif="lot_serial_id.production_id.name">
+                                            <span t-field="lot_serial_id.production_id.name"/>
+                                        </t>
+                                    </div>
+                                    <div>
+                                        NET WEIGHT (PESO NETO):
+                                        <span t-esc="round(lot_serial_id.display_weight,1)"/>
+                                    </div>
+                                    <div>
+                                        GROSS WEIGHT (PESO BRUTO):
+                                        <span t-esc="round(lot_serial_id.gross_weight,1)"/>
+                                    </div>
+                                    <div>
+                                        EXPORTED BY (EXPORTADO POR):
+                                        <span t-esc="res_company.name"/>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <img
+                                                t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (o.get_full_url(), 'Code128',lot_serial_id.serial_number,550, 45)"
+                                        />
+                                        <span t-field="lot_serial_id.serial_number"/>
+                                    </div>
+                                    <div style="text-align:center;">
+                                        PRODUCT OF CHILE - PRODUCTO DE CHILE
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <t t-if="not o.lot_serial_ids[-1].serial_number == lot_serial_id.serial_number">
+                            <p style="page-break-after:always;"/>
+                        </t>
+                        <t t-else="">
+                            <p style="page-break-after:avoid;"/>
+                        </t>
+                    </t>
                 </t>
             </div>
         </t>
@@ -230,11 +365,13 @@
                                 </div>
                                 <div>
                                     NET WEIGHT (PESO NETO):
-                                    <span t-esc="doc.net_weight"/> kgs.
+                                    <span t-esc="doc.net_weight"/>
+                                    kgs.
                                 </div>
                                 <div>
                                     GROSS WEIGHT (PESO BRUTO):
-                                    <span t-esc="doc.gross_weight"/> kgs.
+                                    <span t-esc="doc.gross_weight"/>
+                                    kgs.
                                 </div>
                                 <div>
                                     EXPORTED BY (EXPORTADO POR):
@@ -383,6 +520,13 @@
             model="stock.production.lot.serial"
             report_type="qweb-pdf"
             name="dimabe_manufacturing.report_print_all_serial"
+            paperformat="paper_format_10_x_7"
+    />
+    <report id="action_print_all_serial_out"
+            string="Etiquetas para Salida de Proceso"
+            model="stock.production.lot"
+            report="qweb-pdf"
+            name="dimabe_manufacturing.report_print_all_serial_out"
             paperformat="paper_format_10_x_7"
     />
 </odoo>
