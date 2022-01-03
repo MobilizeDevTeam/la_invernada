@@ -129,7 +129,7 @@
             </div>
         </t>
     </template>
-    <template id="report_stock_production_lot_serial_label_all">
+    <template id="report_stock_production_lot_serial_label_all_out">
         <t t-call="web.html_container">
             <div class="page">
                 <t t-foreach="docs" t-as="d">
@@ -241,7 +241,7 @@
                                     </div>
                                     <div style="text-align:center;">
                                         <img
-                                                t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (o.get_full_url(), 'Code128',lot_serial_id.serial_number,550, 45)"
+                                                t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (d.get_full_url(), 'Code128',lot_serial_id.serial_number,550, 45)"
                                         />
                                         <span t-field="lot_serial_id.serial_number"/>
                                     </div>
@@ -251,7 +251,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <t t-if="not o.lot_serial_ids[-1].serial_number == lot_serial_id.serial_number">
+                        <t t-if="not d.lot_serial_ids[-1].serial_number == lot_serial_id.serial_number">
                             <p style="page-break-after:always;"/>
                         </t>
                         <t t-else="">
@@ -522,11 +522,10 @@
             name="dimabe_manufacturing.report_print_all_serial"
             paperformat="paper_format_10_x_7"
     />
-    <report id="action_print_all_serial_out"
+    <report id="action_print_all_out_serial"
             string="Etiquetas para Salida de Proceso"
             model="stock.production.lot"
-            report="qweb-pdf"
-            name="dimabe_manufacturing.report_print_all_serial_out"
-            paperformat="paper_format_10_x_7"
+            report_type="qweb-pdf"
+            name="dimabe_manufacturing.report_stock_production_lot_serial_label_all_out"
     />
 </odoo>
