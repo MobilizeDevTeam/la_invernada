@@ -119,7 +119,7 @@ class OvenUse(models.Model):
 
     lot_locked = fields.Boolean(string='Lote Bloqueado', related='used_lot_id.is_unpelled_locked')
 
-    used_lot_ids = fields.Many2many('stock.production.lot',compute='compute_used_lot_ids')
+    used_lot_ids = fields.Many2many('stock.production.lot', compute='compute_used_lot_ids')
 
     @api.multi
     def compute_used_lot_ids(self):
@@ -140,7 +140,7 @@ class OvenUse(models.Model):
             "domain": {
                 "dried_oven_id": [
                     ('id', 'not in', self.unpelled_dried_id.oven_use_ids.mapped('dried_oven_id').ids),
-                    ('state','=','free'),
+                    ('state', '=', 'free'),
                     ('is_in_use', '=', False)]
             }
         }
