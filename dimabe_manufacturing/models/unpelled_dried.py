@@ -234,21 +234,18 @@ class UnpelledDried(models.Model):
     @api.model
     def create_out_lot(self):
         name = self.env['ir.sequence'].next_by_code('unpelled.dried')
-
         out_lot_id = self.env['stock.production.lot'].create({
             'name': name,
             'product_id': self.out_product_id.id,
             'is_dried_lot': True,
             'producer_id': self.producer_id.id
         })
-
         self.write({
             'out_lot_id': out_lot_id.id
         })
 
     @api.model
     def create_history(self):
-
         return self.env['dried.unpelled.history'].create({
             'is_old_version': True,
             'unpelled_dried_id': self.id,
@@ -421,7 +418,7 @@ class UnpelledDried(models.Model):
                 [False, 'form']
             ],
             'target': 'fullscreen',
-            'domain': [('unpelled_dried_id', '=', unpelled_dried_id)]
+            'domain': [('producer_id', '=', self.producer_id.id), ('out_product_id', '=', self.out_product_id.id)]
         }
 
     @api.multi
@@ -432,5 +429,6 @@ class UnpelledDried(models.Model):
             'name': f'Procesos Activos de {self.producer_id.name}',
             'views': [[self.env.ref('dimabe_manufacturing.unpelled_dried_tree_view').id, 'tree'], [False, 'form']],
             'target': 'fullscreen',
-            'domain': [('producer_id', '=', self.producer_id.id), ('state', '=', 'progress')]
+            'domain': [('producer_id', '=', self.producer_id.id), ('state', '=', 'progress'),
+                       ('out_product_id', '=', self.out_product_id.id)]
         }
