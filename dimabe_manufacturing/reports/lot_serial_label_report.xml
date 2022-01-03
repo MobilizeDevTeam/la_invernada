@@ -145,7 +145,7 @@
                                 <strong>CONTAINS WALNUT - CONTIENE NUEZ</strong>
                             </t>
                         </div>
-                        <table style="font-size:11px;">
+                        <table style="font-size:14px;">
                             <tr>
                                 <th style="border-top: solid 1px;border-bottom:solid 1px;" colspan="2">
                                     <t t-if="lot_serial_id.product_id.label_name">
