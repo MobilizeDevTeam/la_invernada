@@ -140,6 +140,7 @@ class OvenUse(models.Model):
             "domain": {
                 "dried_oven_id": [
                     ('id', 'not in', self.unpelled_dried_id.oven_use_ids.mapped('dried_oven_id').ids),
+                    ('state','=','free'),
                     ('is_in_use', '=', False)]
             }
         }
