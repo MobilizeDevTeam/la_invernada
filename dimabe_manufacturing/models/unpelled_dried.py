@@ -431,7 +431,8 @@ class UnpelledDried(models.Model):
             'name': f'Procesos Activos de {self.producer_id.name}',
             'views': [[self.env.ref('dimabe_manufacturing.unpelled_dried_tree_view').id, 'tree'], [False, 'form']],
             'target': 'fullscreen',
-            'domain': [('producer_id', '=', self.producer_id.id), ('state', '=', 'progress')]
+            'domain': [('producer_id', '=', self.producer_id.id), ('out_product_id', '=', self.out_product_id.id),
+                       ('state', '=', 'progress')]
         }
 
     def print_all_out_serial(self):

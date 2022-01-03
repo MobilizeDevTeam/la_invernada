@@ -80,7 +80,8 @@
                                         type="object"
                                 />
                                 <field name="lot_locked" invisible="1"/>
-                                <button string="Bloquear Lote" attrs="{'invisible':[('lot_locked','=',True),('used_lot_id','!=',False)]}"
+                                <button string="Bloquear Lote"
+                                        attrs="{'invisible':['&amp;','|',('lot_locked','=',True),('used_lot_id','=',False),('state','=','done')]}"
                                         type="object" name="do_lot_locked"
                                         confirm="Al bloquear este lote no se aparecera en los demas procesos compatibles ¿Esta seguro de continuar?"/>
                                 <button string="pausar horno"
