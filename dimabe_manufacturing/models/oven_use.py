@@ -147,7 +147,7 @@ class OvenUse(models.Model):
                         [('state', '=', 'waiting'), ('unpelled_dried_id', '!=', self.unpelled_dried_id.id)]).mapped(
                         'used_lot_id').ids),
                     ('producer_id', '=', self.unpelled_dried_id.producer_id.id),
-                    ('product_id', '=', self.product_in_id.id),
+                    ('product_id', '=', self.unpelled_dried_id.product_in_id.id),
                     ('balance', '>', 0),
                 ]
             }
