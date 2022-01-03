@@ -245,7 +245,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <t t-if="not d.lot_serial_ids[-1].serial_number == lot_serial_id.serial_number">
+                        <t t-if="not d.stock_production_lot_serial_ids[-1].serial_number == lot_serial_id.serial_number">
                             <p style="page-break-after:always;"/>
                         </t>
                         <t t-else="">
