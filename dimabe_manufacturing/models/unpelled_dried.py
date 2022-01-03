@@ -432,3 +432,7 @@ class UnpelledDried(models.Model):
             'domain': [('producer_id', '=', self.producer_id.id), ('state', '=', 'progress'),
                        ('out_product_id', '=', self.out_product_id.id)]
         }
+
+    def print_all_out_serial(self):
+        for item in self:
+            item.out_lot_id.print_all_serial()
