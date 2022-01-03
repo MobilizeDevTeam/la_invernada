@@ -107,7 +107,7 @@
                         <field name="out_lot_id" readonly="1" attrs="{'invisible':[('out_lot_id','=',False)]}"/>
                         <field name="canning_id"/>
                         <field name="label_durability_id"/>
-                        <button type="object" name="print_all_out_serial" string="Imprimir Todo"/>
+
                         <field name="out_serial_ids" attrs="{'readonly': [('can_close','!=',True)]}">
                             <tree editable="bottom">
                                 <field name="stock_production_lot_id" readonly="1"/>
@@ -123,6 +123,9 @@
                                 />
                             </tree>
                         </field>
+                    </group>
+                    <group>
+                        <button type="object" name="print_all_out_serial" string="Imprimir Todo"/>
                     </group>
                 </sheet>
             </form>
