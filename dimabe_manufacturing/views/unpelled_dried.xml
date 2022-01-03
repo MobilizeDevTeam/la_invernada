@@ -71,7 +71,7 @@
                                 <field name="dried_oven_id" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="used_lot_ids" invisible="1"/>
                                 <field name="used_lot_id"
-                                       domain="['&amp;','&amp;','&amp;','&amp;','|',('producer_id','=',parent.producer_id),('product_id','=',parent.product_in_id),('balance','>',0),('unpelled_state','=','draft'),('id','in',used_lot_ids)]"/>
+                                       domain="[('producer_id','=',parent.producer_id),('product_id','=',parent.product_in_id),('balance','>',0),('unpelled_state','=','draft')]"/>
                                 <field name="init_date" invisible="1"/>
                                 <field name="finish_date" invisible="1"/>
                                 <field name="active_seconds" widget="time_live"/>
