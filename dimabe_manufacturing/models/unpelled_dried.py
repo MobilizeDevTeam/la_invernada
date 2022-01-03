@@ -142,6 +142,8 @@ class UnpelledDried(models.Model):
 
     can_done = fields.Boolean('Se puede finalizar', compute='compute_can_done')
 
+    locked = fields.Boolean('Bloqueado')
+
     @api.multi
     def compute_can_done(self):
         for item in self:
