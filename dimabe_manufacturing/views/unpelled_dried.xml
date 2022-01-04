@@ -113,9 +113,9 @@
                         <field name="canning_id"/>
                         <field name="label_durability_id"/>
 
-                        <field name="out_serial_ids" decoration-success="printed == True"
+                        <field name="out_serial_ids"
                                attrs="{'readonly': [('can_close','!=',True)]}">
-                            <tree editable="bottom">
+                            <tree editable="bottom" decoration-success="printed == True">
                                 <field name="id" invisible="1"/>
                                 <field name="to_print" attrs="{'readonly': [('id','=',False)]}"/>
                                 <field name="printed" invisible="1"/>
