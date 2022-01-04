@@ -136,20 +136,19 @@ class OvenUse(models.Model):
     @api.multi
     @api.onchange('dried_oven_id')
     def onchange_oven(self):
+        unpelled_dried_id = self.env.context['unpelled_dried_id']
+        lots = self.env['stock.production.lot'].search([('product_id', '=', self.unpelled_dried_id.product_in_id.id),
+                                                        ('producer_id', '=',
+                                                         self.unpelled_dried_id.producer_id.id),
+                                                        ('balance', '>', 0)]).filtered(
+            lambda x: not x.unpelled_dried_id.id or x.unpelled_dried_id.id == unpelled_dried_id)
         res = {
             "domain": {
                 "dried_oven_id": [
                     ('id', 'not in', self.unpelled_dried_id.oven_use_ids.mapped('dried_oven_id').ids),
                     ('state', '=', 'free'),
                     ('is_in_use', '=', False)],
-                'used_lot_id': [
-                    ('id', 'not in', self.env['oven.use'].search(
-                        [('unpelled_dried_id', '!=', self.unpelled_dried_id.id)]).mapped(
-                        'used_lot_id').ids),
-                    ('producer_id', '=', self.unpelled_dried_id.producer_id.id),
-                    ('product_id', '=', self.unpelled_dried_id.product_in_id.id),
-                    ('balance', '>', 0),
-                ]
+                'used_lot_id': [('id', 'in', lots.ids)]
             }
         }
         return res
@@ -287,17 +286,19 @@ class OvenUse(models.Model):
                 'unpelled_state': 'draft'
             })
             res = super(OvenUse, self).unlink()
-            print(self.unpelled_dried_id.oven_use_ids)
             return res
 
     @api.multi
     def create(self, values):
+        for value in values:
+            if 'used_lot_id' in value.keys():
+                lot_id = self.env['stock.production.lot'].search([('id', '=', value['used_lot_id'])])
+                lot_id.write({
+                    'unpelled_dried_id': value['unpelled_dried_id']
+                })
         res = super(OvenUse, self).create(values)
         for r in res:
             r.dried_oven_id.write({
                 'state': 'waiting'
-            })
-            r.used_lot_id.write({
-                'unpelled_state': 'waiting'
             })
         return res

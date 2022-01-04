@@ -260,6 +260,8 @@ class StockProductionLot(models.Model):
 
     is_unpelled_locked = fields.Boolean(string='Bloqueado')
 
+    unpelled_dried_id = fields.Many2one('unpelled.dried','Proceso de Secado')
+
     def do_change_date_best(self):
         for item in self:
             wiz = self.env['change.date.lot'].create({
