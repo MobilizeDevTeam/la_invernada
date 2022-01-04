@@ -64,7 +64,8 @@
                         <field name="product_in_id" attrs="{'readonly':[('state','in','done','progress')]}"/>
                         <field name="locked" invisible="1"/>
 
-                        <field name="oven_use_ids" attrs="{'readonly':['|',('state','=','done'),('locked','=',True)]}" context="{'unpelled_dried_id': id}">
+                        <field name="oven_use_ids" attrs="{'readonly':['|',('state','=','done'),('locked','=',True)]}"
+                               context="{'unpelled_dried_id': id}">
                             <tree editable="bottom" create="true" delete="true" decoration-muted="state == 'cancel'">
                                 <field name="init_active_time" invisible="1"/>
                                 <field name="finish_active_time" invisible="1"/>
@@ -112,7 +113,8 @@
                         <field name="canning_id"/>
                         <field name="label_durability_id"/>
 
-                        <field name="out_serial_ids" attrs="{'readonly': [('can_close','!=',True)]}">
+                        <field name="out_serial_ids" decoration-success="printed == True"
+                               attrs="{'readonly': [('can_close','!=',True)]}">
                             <tree editable="bottom">
                                 <field name="id" invisible="1"/>
                                 <field name="to_print" attrs="{'readonly': [('id','=',False)]}"/>
@@ -126,12 +128,6 @@
                                 <button name="print_serial_label"
                                         type="object" string="Imprimir"
                                         attrs="{'invisible': [('printed','=',True)]}"
-                                        context="{'producer_id': parent.producer_id}"
-                                />
-                                <button name="print_serial_label"
-                                        type="object" string="Imprimir"
-                                        class="oe_highlight"
-                                        attrs="{'invisible': [('printed','=',False)]}"
                                         context="{'producer_id': parent.producer_id}"
                                 />
                             </tree>
