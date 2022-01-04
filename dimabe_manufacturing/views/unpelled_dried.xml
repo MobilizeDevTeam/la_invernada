@@ -129,7 +129,7 @@
                         </field>
                     </group>
                     <group>
-                        <button type="object" name="print_all_out_serial" string="Imprimir Todo"/>
+                        <button type="object" name="print_all_out_serial" class="oe_highlight" string="Imprimir Todo"/>
                     </group>
                 </sheet>
             </form>
