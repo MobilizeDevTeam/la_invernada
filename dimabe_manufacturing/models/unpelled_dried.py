@@ -400,7 +400,6 @@ class UnpelledDried(models.Model):
             #         'state': 'done'
             #     })
 
-
     @api.multi
     def start_new_unpelled(self):
         for item in self:
@@ -454,14 +453,9 @@ class UnpelledDried(models.Model):
             'views': [[self.env.ref('dimabe_manufacturing.unpelled_dried_tree_view').id, 'tree'], [False, 'form']],
             'target': 'fullscreen',
             'domain': [('producer_id', '=', self.producer_id.id), ('out_product_id', '=', self.out_product_id.id),
-                       ('state', 'in', ['progress','draft'])]
+                       ('state', 'in', ['progress', 'draft'])]
         }
 
     def print_all_out_serial(self):
-        res = self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
+        return self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
             .report_action(self.out_lot_id)
-        self.out_lot_id.stock_production_lot_serial_ids.filtered(lambda x: x.to_print).write({
-            'to_print': False,
-            'printed': True
-        })
-        return res
