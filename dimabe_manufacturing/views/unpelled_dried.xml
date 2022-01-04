@@ -127,7 +127,6 @@
                                 <field name="gross_weight"/>
                                 <button name="print_serial_label"
                                         type="object" string="Imprimir"
-                                        attrs="{'invisible': [('printed','=',True)]}"
                                         context="{'producer_id': parent.producer_id}"
                                 />
                             </tree>
