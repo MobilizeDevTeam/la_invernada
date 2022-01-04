@@ -457,7 +457,7 @@ class UnpelledDried(models.Model):
         }
 
     def print_all_out_serial(self):
-        serials = self.out_lot_id.stock_production_lot_serial_ids.filtered(lambda x: x.printed)
+        serials = self.out_serial_ids.filtered(lambda x: x.printed)
         serials.write({
             'printed': True,
             'to_print': False
