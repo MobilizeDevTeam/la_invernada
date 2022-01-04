@@ -466,5 +466,8 @@ class UnpelledDried(models.Model):
             .report_action(serials)
 
     def print_all_out_serial(self):
+        self.out_serial_ids.write({
+            'printed': True
+        })
         return self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
             .report_action(self.out_serial_ids)
