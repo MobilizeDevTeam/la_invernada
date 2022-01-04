@@ -365,19 +365,41 @@ class UnpelledDried(models.Model):
             item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('dried_oven_ids').set_is_in_use(False)
             item.oven_use_ids.filtered(lambda a: a.state == 'done').write({
                 'history_id': history_id.id,
-                'unpelled_dried_id': None
             })
-            item.create_out_lot()
-            if not item.oven_use_ids:
-                item.write({
-                    'state': 'draft'
-                })
             item.out_lot_id.verify_without_lot()
             item.out_lot_id.update_kg(item.out_lot_id.id)
-
             item.write({
-                'can_close': False
+                'state': 'done'
             })
+            new_process = self.env['unpelled.dried'].create({
+                'producer_id': item.producer_id.id,
+                'state': 'draft',
+                'origin_location_id': item.origin_location_id.id,
+                'dest_location_id': item.dest_location_id.id,
+                'product_in_id': item.product_in_id.id,
+                'out_product_id': item.out_product_id.id,
+                'canning_id': item.canning_id.id,
+                'label_durability_id': item.label_durability_id.id,
+            })
+            view_id = self.env.ref('dimabe_manufacturing.unpelled_dried_form_view')
+            return {
+                "name": 'Nuevo Proceso',
+                "type": 'ir.actions.act_window',
+                "view_type": 'form',
+                "view_mode": 'form',
+                "res_model": 'unpelled.dried',
+                'views': [(view_id.id, 'form')],
+                'view_id': view_id.id,
+                'target': 'current',
+                'res_id': new_process.id,
+                'context': self.env.context,
+            }
+            # item.create_out_lot()
+            # if not item.oven_use_ids:
+            #     item.write({
+            #         'state': 'done'
+            #     })
+
 
     @api.multi
     def start_new_unpelled(self):
@@ -432,7 +454,7 @@ class UnpelledDried(models.Model):
             'views': [[self.env.ref('dimabe_manufacturing.unpelled_dried_tree_view').id, 'tree'], [False, 'form']],
             'target': 'fullscreen',
             'domain': [('producer_id', '=', self.producer_id.id), ('out_product_id', '=', self.out_product_id.id),
-                       ('state', '=', 'progress')]
+                       ('state', 'in', ['progress','draft'])]
         }
 
     def print_all_out_serial(self):

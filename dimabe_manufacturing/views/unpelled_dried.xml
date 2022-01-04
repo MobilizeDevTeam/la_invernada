@@ -156,6 +156,9 @@
         <field name="name">Proceso de Secado</field>
         <field name="res_model">unpelled.dried</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">
+            [('state','in',['progress','draft'])]
+        </field>
     </record>
 
     <record id="unpelled_dried_search_view" model="ir.ui.view">
