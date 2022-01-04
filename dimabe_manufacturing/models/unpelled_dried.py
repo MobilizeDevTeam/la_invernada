@@ -390,7 +390,7 @@ class UnpelledDried(models.Model):
                 "res_model": 'unpelled.dried',
                 'views': [(view_id.id, 'form')],
                 'view_id': view_id.id,
-                'target': 'current',
+                'target': 'new',
                 'res_id': new_process.id,
                 'context': self.env.context,
             }
@@ -456,7 +456,7 @@ class UnpelledDried(models.Model):
                        ('state', 'in', ['progress', 'draft'])]
         }
 
-    def print_all_out_serial(self):
+    def print_all_out_selection(self):
         serials = self.out_serial_ids.filtered(lambda x: x.to_print)
         serials.write({
             'printed': True,
@@ -464,3 +464,7 @@ class UnpelledDried(models.Model):
         })
         return self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
             .report_action(serials)
+
+    def print_all_out_serial(self):
+        return self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
+            .report_action(self.out_serial_ids)
