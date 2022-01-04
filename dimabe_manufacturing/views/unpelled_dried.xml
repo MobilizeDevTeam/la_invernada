@@ -115,7 +115,7 @@
 
                         <field name="out_serial_ids"
                                attrs="{'readonly': [('can_close','!=',True)]}">
-                            <tree editable="bottom" decoration-success="printed == True">
+                            <tree editable="bottom" decoration-info="printed == True">
                                 <field name="id" invisible="1"/>
                                 <field name="to_print" attrs="{'readonly': [('id','=',False)]}"/>
                                 <field name="printed" invisible="1"/>
