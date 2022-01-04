@@ -114,6 +114,9 @@
 
                         <field name="out_serial_ids" attrs="{'readonly': [('can_close','!=',True)]}">
                             <tree editable="bottom">
+                                <field name="id" invisible="1"/>
+                                <field name="to_print" attrs="{'readonly': [('id','=',False)]}"/>
+                                <field name="printed" invisible="1"/>
                                 <field name="stock_production_lot_id" readonly="1"/>
                                 <field name="consumed" readonly="1"/>
                                 <field name="display_weight" readonly="1"/>
@@ -122,7 +125,13 @@
                                 <field name="gross_weight"/>
                                 <button name="print_serial_label"
                                         type="object" string="Imprimir"
-                                        attrs="{'invisible':['|',('serial_number', '=', False)]}"
+                                        attrs="{'invisible': [('printed','=',True)]}"
+                                        context="{'producer_id': parent.producer_id}"
+                                />
+                                <button name="print_serial_label"
+                                        type="object" string="Imprimir"
+                                        class="oe_highlight"
+                                        attrs="{'invisible': [('printed','=',False)]}"
                                         context="{'producer_id': parent.producer_id}"
                                 />
                             </tree>

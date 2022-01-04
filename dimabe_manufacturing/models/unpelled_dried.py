@@ -458,5 +458,10 @@ class UnpelledDried(models.Model):
         }
 
     def print_all_out_serial(self):
-        return self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
+        res = self.env.ref('dimabe_manufacturing.action_print_all_out_serial') \
             .report_action(self.out_lot_id)
+        self.out_lot_id.stock_production_lot_serial_ids.filtered(lambda x: x.to_print).write({
+            'to_print': False,
+            'printed': True
+        })
+        return res

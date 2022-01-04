@@ -173,6 +173,10 @@ class StockProductionLotSerial(models.Model):
 
     best_before_date_new = fields.Date(string='Consumir antes de')
 
+    to_print = fields.Boolean(string='Imprimir')
+
+    printed = fields.Boolean(string='Impresa')
+
     @api.multi
     def compute_available_weight(self):
         for item in self:
