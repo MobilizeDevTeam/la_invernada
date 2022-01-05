@@ -145,7 +145,7 @@ class OvenUse(models.Model):
         res = {
             "domain": {
                 "dried_oven_id": [
-                    ('id', 'not in', self.unpelled_dried_id.oven_use_ids.mapped('dried_oven_id').ids),
+                    ('id', 'not in', self.unpelled_dried_id.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped('dried_oven_id').ids),
                     ('state', '=', 'free'),
                     ('is_in_use', '=', False)],
                 'used_lot_id': [('id', 'in', lots.ids)]
