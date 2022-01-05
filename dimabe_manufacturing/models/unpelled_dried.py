@@ -362,7 +362,10 @@ class UnpelledDried(models.Model):
                 'state': 'done',
                 'move_id': stock_move.id
             })
-            item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('dried_oven_ids').set_is_in_use(False)
+            item.oven_use_ids.filtered(lambda a: a.state == 'done').mapped('dried_oven_ids').write({
+                'is_in_use': False,
+                'state': 'free'
+            })
             item.oven_use_ids.filtered(lambda a: a.state == 'done').write({
                 'unpelled_dried_id': None,
                 'history_id': history_id.id,
