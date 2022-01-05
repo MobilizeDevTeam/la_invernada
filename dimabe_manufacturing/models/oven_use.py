@@ -214,7 +214,8 @@ class OvenUse(models.Model):
                 'state': 'cancel',
             })
             item.dried_oven_id.write({
-                'is_in_use': True
+                'is_in_use': False,
+                'state': 'free'
             })
             item.used_lot_id.write({
                 'unpelled_state': 'waiting'
@@ -280,7 +281,8 @@ class OvenUse(models.Model):
             if item.state == 'done':
                 raise models.UserError('No se puede eliminar un registro si el horno esta finalizado')
             item.dried_oven_id.write({
-                'is_in_use': False
+                'is_in_use': False,
+                'state': 'free'
             })
             item.used_lot_id.write({
                 'unpelled_state': 'draft'
