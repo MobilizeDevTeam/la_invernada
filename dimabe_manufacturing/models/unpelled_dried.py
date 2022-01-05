@@ -369,9 +369,10 @@ class UnpelledDried(models.Model):
             })
             item.out_lot_id.verify_without_lot()
             item.out_lot_id.update_kg(item.out_lot_id.id)
-            item.write({
-                'state': 'done'
-            })
+            if not item.oven_use_ids:
+                item.write({
+                    'state': 'draft'
+                })
             # new_process = self.env['unpelled.dried'].create({
             #     'producer_id': item.producer_id.id,
             #     'state': 'draft',
