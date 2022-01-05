@@ -257,7 +257,8 @@ class OvenUse(models.Model):
                 'unpelled_state': 'done'
             })
             item.dried_oven_id.write({
-                'is_in_use': False
+                'is_in_use': False,
+                'state': 'free'
             })
             item.unpelled_dried_id.write({
                 'can_close': True
