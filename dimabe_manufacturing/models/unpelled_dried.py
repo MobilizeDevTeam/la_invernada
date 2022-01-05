@@ -92,7 +92,7 @@ class UnpelledDried(models.Model):
         'oven.use',
         'unpelled_dried_id',
         'Hornos',
-        domain=[('history_id', '=', None), ('state', '!=', 'cancel')]
+        domain=[('state', '!=', 'cancel')]
     )
 
     used_lot_ids = fields.One2many(
@@ -390,7 +390,7 @@ class UnpelledDried(models.Model):
                 "res_model": 'unpelled.dried',
                 'views': [(view_id.id, 'form')],
                 'view_id': view_id.id,
-                'target': 'new',
+                'target': 'current',
                 'res_id': new_process.id,
                 'context': self.env.context,
             }

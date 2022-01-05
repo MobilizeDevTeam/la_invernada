@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="custom_oven_manager_collection_group" model="custom.collection.group">
+        <field name="name">Administrador de Horno</field>
+        <field name="group_id" ref="dimabe_manufacturing.oven_manager"/>
+    </record>
+</odoo>
