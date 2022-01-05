@@ -92,7 +92,7 @@ class UnpelledDried(models.Model):
         'oven.use',
         'unpelled_dried_id',
         'Hornos',
-        domain=[('history_id', '=', None), ('state', '!=', 'cancel')]
+        domain=[('history_id', '=', None)]
     )
 
     used_lot_ids = fields.One2many(
