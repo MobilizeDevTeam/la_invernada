@@ -141,7 +141,7 @@ class OvenUse(models.Model):
             ('product_id', '=', self.unpelled_dried_id.product_in_id.id),
             ('producer_id', '=',
              self.unpelled_dried_id.producer_id.id),
-            ('balance', '>', 0),('stock_picking_id','!=',False)]).filtered(
+            ('balance', '>', 0), ('stock_picking_id', '!=', False)]).filtered(
             lambda x: not x.unpelled_dried_id.id or x.unpelled_dried_id.id == unpelled_dried_id)
         res = {
             "domain": {
