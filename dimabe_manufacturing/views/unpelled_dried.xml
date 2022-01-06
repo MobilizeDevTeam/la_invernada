@@ -114,7 +114,7 @@
                         <field name="label_durability_id"/>
 
                         <field name="out_serial_ids"
-                               attrs="{'readonly': [('can_close','!=',True)]}">
+                               attrs="{'readonly': ['|',('can_close','!=',True),('state','=','done')]}">
                             <tree editable="bottom" decoration-info="printed == True" options="{'no_open': True}">
                                 <field name="id" invisible="1"/>
                                 <field name="to_print" attrs="{'readonly': [('id','=',False)]}"/>
@@ -133,7 +133,8 @@
                         </field>
                     </group>
                     <group>
-                        <button type="object" name="print_all_out_selection" class="oe_highlight" string="Imprimir Seleccion"/>
+                        <button type="object" name="print_all_out_selection" class="oe_highlight"
+                                string="Imprimir Seleccion"/>
                         <button type="object" name="print_all_out_serial" class="oe_highlight" string="Imprimir Todo"/>
                     </group>
                 </sheet>
