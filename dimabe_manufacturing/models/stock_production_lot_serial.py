@@ -476,7 +476,10 @@ class StockProductionLotSerial(models.Model):
         if 'producer_id' in self.env.context:
             for item in self:
                 item.producer_id = self.env.context['producer_id']
-
+        if not self.printed:
+            self.write({
+                'printed': True
+            })
         return self.env.ref(
             'dimabe_manufacturing.action_stock_production_lot_serial_label_report'
         ).report_action(self)
