@@ -137,15 +137,17 @@ class OvenUse(models.Model):
     @api.onchange('dried_oven_id')
     def onchange_oven(self):
         unpelled_dried_id = self.env.context['unpelled_dried_id']
-        lots = self.env['stock.production.lot'].search([('product_id', '=', self.unpelled_dried_id.product_in_id.id),
-                                                        ('producer_id', '=',
-                                                         self.unpelled_dried_id.producer_id.id),
-                                                        ('balance', '>', 0)]).filtered(
+        lots = self.env['stock.production.lot'].search([
+            ('product_id', '=', self.unpelled_dried_id.product_in_id.id),
+            ('producer_id', '=',
+             self.unpelled_dried_id.producer_id.id),
+            ('balance', '>', 0),('stock_picking_id','!=',False)]).filtered(
             lambda x: not x.unpelled_dried_id.id or x.unpelled_dried_id.id == unpelled_dried_id)
         res = {
             "domain": {
                 "dried_oven_id": [
-                    ('id', 'not in', self.unpelled_dried_id.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped('dried_oven_id').ids),
+                    ('id', 'not in', self.unpelled_dried_id.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped(
+                        'dried_oven_id').ids),
                     ('state', '=', 'free'),
                     ('is_in_use', '=', False)],
                 'used_lot_id': [('id', 'in', lots.ids)]
