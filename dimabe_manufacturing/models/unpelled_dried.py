@@ -385,7 +385,7 @@ class UnpelledDried(models.Model):
                 'views': [(view_id.id, 'form')],
                 'view_id': view_id.id,
                 'target': 'current',
-                'res_id': self.id,
+                'res_id': history_id.id,
                 'context': self.env.context,
             }
 
