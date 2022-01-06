@@ -115,7 +115,7 @@
 
                         <field name="out_serial_ids"
                                attrs="{'readonly': [('can_close','!=',True)]}">
-                            <tree editable="bottom" decoration-info="printed == True" options="{'no_open': True}">
+                            <tree editable="bottom" decoration-danger="printed == True" options="{'no_open': True}">
                                 <field name="id" invisible="1"/>
                                 <field name="to_print" attrs="{'readonly': [('id','=',False)]}"/>
                                 <field name="printed" invisible="1"/>
@@ -130,9 +130,6 @@
                                         context="{'producer_id': parent.producer_id}"
                                         attrs="{'invisible':[('printed','=',True)]}"
                                 />
-                                <button name="print_serial_label" type="object" string="Imprimir"
-                                        context="{'producer_id': parent.producer_id}"
-                                        attrs="{'invisible':[('printed','=',False)]}"/>
                             </tree>
                         </field>
                     </group>
