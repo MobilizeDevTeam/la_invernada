@@ -299,8 +299,11 @@ class StockPicking(models.Model):
     @api.multi
     def generate_report(self):
         self.pictures.set_pages()
-        for page in self.pictures:
-            print(f'Counter {page.counter} Page {page.page}')
+        self.write({
+            'have_picture_report': True
+        })
+        return self.env.ref('dimabe_export_order.action_dispatch_label_report') \
+            .report_action(self.pictures)
 
 
 
