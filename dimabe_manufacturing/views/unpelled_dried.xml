@@ -20,7 +20,7 @@
                             type="object"
                             attrs="{'invisible':[('can_done','=',False)]}"
                     />
-                    <field name="show_new_process"/>
+                    <field name="show_new_process" invisible="1"/>
                     <button string="Comenzar Nuevo Proceso"
                             type="object" class="oe_highlight" name="start_new_unpelled"
                             attrs="{'invisible': ['|',('state','=','done'),('show_new_process','=',False)]}"/>
