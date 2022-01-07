@@ -11,7 +11,7 @@ class IrAttachment(models.Model):
 
     @api.constrains('counter')
     def _validate_counter(self):
-        if self.counter > 12:
+        if self.counter > 16:
             raise models.ValidationError("La posicion de la imagen {} no existe".format(self.datas_fname))
 
     @api.model_create_multi

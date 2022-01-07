@@ -166,13 +166,6 @@ class DriedUnpelledHistory(models.Model):
         compute='compute_can_adjust'
     )
 
-    @api.multi
-    def test(self):
-        total_active_seconds = round(sum(oven.active_seconds for oven in self.oven_use_ids) / len(self.oven_use_ids))
-        hours = total_active_seconds // 3600
-        minutes = (total_active_seconds % 3600) // 60
-        seconds = total_active_seconds % 60
-        print(f'{hours}:{minutes}:{seconds}')
 
     @api.multi
     def compute_can_adjust(self):
