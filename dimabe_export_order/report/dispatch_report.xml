@@ -1547,7 +1547,7 @@
                     <div style="width:950px;height:1200px; text-align: center;">
                         <t t-foreach="docs.sorted(key=lambda x: x.counter)" t-as="o">
                             <img width="49%" t-att-src="'data:o.mimetype;base64,%s' % to_text(o.datas)"/>
-                            <t t-if="o.counter == 10 or o.counter == 12">
+                            <t t-if="o.counter == 4 or o.counter == 8 or o.counter == 12">
                                 <p style="page-break-after:always;"></p>
                             </t>
                         </t>
