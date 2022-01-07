@@ -150,7 +150,7 @@ class UnpelledDried(models.Model):
     @api.multi
     def compute_show_btn_new_process(self):
         for item in self:
-            item.show_new_process = len(self.oven_use_ids) > 0 and self.total_pending_lot_count > 0
+            item.show_new_process = len(self.oven_use_ids) > 0
 
 
     @api.multi
