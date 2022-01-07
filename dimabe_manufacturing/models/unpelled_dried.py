@@ -144,12 +144,13 @@ class UnpelledDried(models.Model):
 
     locked = fields.Boolean('Bloqueado')
 
-    show_new_process = fields.Boolean('Mostrar nuevo proceso')
+    show_new_process = fields.Boolean('Mostrar nuevo proceso',compute='compute_show_btn_new_process')
 
+    @api.depends('oven_use_ids')
     @api.multi
     def compute_show_btn_new_process(self):
         for item in self:
-            item.show_new_process = any(self.oven_use_ids)
+            item.show_new_process = len(self.oven_use_ids) > 0
 
 
     @api.multi
