@@ -1516,43 +1516,16 @@
     <template id="report_truck_dispatch">
         <t t-call="web.html_container">
             <div class="page" style="width:100%; text-align:center">
-                <t t-if="len(docs) &lt;= 4">
-                    <div style="width:950px; height:1200px; border: 1px solid; text-align: center;">
-                        <t t-foreach="docs.sorted(key=lambda x: x.counter)" t-as="o">
-                            <img width="49%" t-att-src="'data:o.mimetype;base64,%s' % to_text(o.datas)"/>
+                <div style="width:950px; height:1200px; text-align: center;">
+                    <t t-foreach="docs.sorted(key=lambda x: x.counter)" t-as="o">
+                        <t t-set="page" t-value="o.page"/>
+                        <img width="49%" t-att-src="'data:o.mimetype;base64,%s' % to_text(o.datas)"/>
+                        <t t-if="page != o.page">
+                            <p style="page-break-after:always;"></p>
+                            <t t-set="page" t-value="o.page"/>
                         </t>
-                    </div>
-                </t>
-                <t t-if="len(docs) &lt;= 8">
-                    <div style="width:950px; height:1200px; text-align: center;">
-                        <t t-foreach="docs.sorted(key=lambda x: x.counter)" t-as="o">
-                            <img width="49%" t-att-src="'data:o.mimetype;base64,%s' % to_text(o.datas)"/>
-                            <t t-if="o.counter == 4">
-                                <p style="page-break-after:always;"></p>
-                            </t>
-                        </t>
-                    </div>
-                </t>
-                <t t-if="len(docs) &lt;= 12">
-                    <div style="width:950px; height:1200px; text-align: center;">
-                        <t t-foreach="docs.sorted(key=lambda x: x.counter)" t-as="o">
-                            <img width="49%" t-att-src="'data:o.mimetype;base64,%s' % to_text(o.datas)"/>
-                            <t t-if="o.counter == 4 or o.counter == 8">
-                                <p style="page-break-after:always;"></p>
-                            </t>
-                        </t>
-                    </div>
-                </t>
-                <t t-if="len(docs) &gt; 12">
-                    <div style="width:950px; height:1200px; text-align: center;">
-                        <t t-foreach="docs.sorted(key=lambda x: x.counter)" t-as="o">
-                            <img width="49%" t-att-src="'data:o.mimetype;base64,%s' % to_text(o.datas)"/>
-                            <t t-if="o.counter == 4 or o.counter == 8 or o.counter == 12">
-                                <p style="page-break-after:always;"></p>
-                            </t>
-                        </t>
-                    </div>
-                </t>
+                    </t>
+                </div>
             </div>
         </t>
     </template>

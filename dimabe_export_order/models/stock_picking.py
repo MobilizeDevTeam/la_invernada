@@ -4,7 +4,7 @@ from PIL import Image
 import io
 import base64
 import codecs
-
+import math
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
@@ -298,22 +298,11 @@ class StockPicking(models.Model):
 
     @api.multi
     def generate_report(self):
+        self.pictures.set_pages()
+        for page in self.pictures:
+            print(f'Counter {page.counter} Page {page.page}')
 
-        # for item in self.pictures:
-        #     if item.counter >= 9:
-        #         item.datas = tools.image_resize_image_big(
-        #             item.datas,size=(100000000000000000,100000000000000)
-        #         )
-        #     else:
-        #         item.datas = tools.image_resize_image_big(
-        #             item.datas,size=(10000000000000000000000,1000000000000000000000)
-        #         )
 
-        self.write({
-            'have_picture_report': True
-        })
-        return self.env.ref('dimabe_export_order.action_dispatch_label_report') \
-            .report_action(self.pictures)
 
 
     @api.multi
