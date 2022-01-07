@@ -370,24 +370,53 @@ class UnpelledDried(models.Model):
                 'unpelled_dried_id': None,
                 'history_id': history_id.id,
             })
+            process = self.env['unpelled.dried'].search([('state', 'in', ['draft', 'progress']),
+                                                         ('out_product_id', '=', item.out_product_id.id),
+                                                         ('producer_id', '=', item.producer_id.id),
+                                                         ('id', '!=', self.id)])
             item.out_lot_id.verify_without_lot()
             item.out_lot_id.update_kg(item.out_lot_id.id)
             item.write({
                 'state': 'done'
             })
-            view_id = self.env.ref('dimabe_manufacturing.unpelled_dried_form_view')
-            return {
-                "name": 'Historial',
-                "type": 'ir.actions.act_window',
-                "view_type": 'form',
-                "view_mode": 'form',
-                "res_model": 'dried.unpelled.history',
-                'views': [(view_id.id, 'form')],
-                'view_id': view_id.id,
-                'target': 'current',
-                'res_id': history_id.id,
-                'context': self.env.context,
-            }
+            if len(process) > 0:
+                view_id = self.env.ref('dimabe_manufacturing.dried_unpelled_history_form_view')
+                return {
+                    "name": 'Historial',
+                    "type": 'ir.actions.act_window',
+                    "view_type": 'form',
+                    "view_mode": 'form',
+                    "res_model": 'dried.unpelled.history',
+                    'views': [(view_id.id, 'form')],
+                    'view_id': view_id.id,
+                    'target': 'current',
+                    'res_id': history_id.id,
+                    'context': self.env.context,
+                }
+            else:
+                new_process = self.env['unpelled.dried'].create({
+                    'producer_id': item.producer_id.id,
+                    'state': 'draft',
+                    'origin_location_id': item.origin_location_id.id,
+                    'dest_location_id': item.dest_location_id.id,
+                    'product_in_id': item.product_in_id.id,
+                    'out_product_id': item.out_product_id.id,
+                    'canning_id': item.canning_id.id,
+                    'label_durability_id': item.label_durability_id.id,
+                })
+                view_id = self.env.ref('dimabe_manufacturing.unpelled_dried_form_view')
+                return {
+                    "name": 'Nuevo Proceso',
+                    "type": 'ir.actions.act_window',
+                    "view_type": 'form',
+                    "view_mode": 'form',
+                    "res_model": 'unpelled.dried',
+                    'views': [(view_id.id, 'form')],
+                    'view_id': view_id.id,
+                    'target': 'current',
+                    'res_id': new_process.id,
+                    'context': self.env.context,
+                }
 
     @api.multi
     def start_new_unpelled(self):
