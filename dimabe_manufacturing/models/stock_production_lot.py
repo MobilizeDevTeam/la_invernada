@@ -10,8 +10,8 @@ class StockProductionLot(models.Model):
     ]
 
     unpelled_state = fields.Selection([
-        ('draft', 'Borrador'),
-        ('waiting', 'En Espera'),
+        ('draft', 'En Espera para ingresar'),
+        ('waiting', 'En Espera para Iniciar'),
         ('drying', 'Secando'),
         ('stopped', 'Detenido'),
         ('done', 'Terminado')
