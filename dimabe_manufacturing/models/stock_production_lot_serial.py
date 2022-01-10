@@ -480,9 +480,26 @@ class StockProductionLotSerial(models.Model):
             self.write({
                 'printed': True
             })
-        return self.env.ref(
-            'dimabe_manufacturing.action_stock_production_lot_serial_label_report'
-        ).report_action(self)
+            return self.env.ref(
+                'dimabe_manufacturing.action_stock_production_lot_serial_label_report'
+            ).report_action(self)
+        else:
+            wiz_id = self.env['confirm.re_print.serial'].create({
+                'serial_id': self.id,
+            })
+            view_id = self.env.ref('dimabe_manufacturing.confirm_re_print_serial')
+            return {
+                'name': "Reimpresion de Etiqueta",
+                'type': "ir.actions.act_window",
+                'view_type': 'form',
+                'view_model': 'form',
+                'res_model': 'confirm.re_print.serial',
+                'views': [(view_id.id, 'form')],
+                'target': 'new',
+                'res_id': wiz_id.id,
+                'context': self.env.context
+            }
+
 
     @api.multi
     def get_full_url(self):

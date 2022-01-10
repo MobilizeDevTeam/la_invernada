@@ -150,6 +150,10 @@ class MrpWorkorder(models.Model):
 
     to_done = fields.Boolean('Para Finalizar')
 
+    supervisor_name = fields.Char('Supervisor')
+
+    turn_name = fields.Char('Turno')
+
     @api.multi
     def _compute_producers_id(self):
         for item in self:
@@ -515,7 +519,8 @@ class MrpWorkorder(models.Model):
         if not isinstance(self.id, int):
             self = self._origin
         serial_number = serial_number.strip()
-        serial = self.env['stock.production.lot.serial'].search([('serial_number', '=', serial_number),('stock_production_lot_id','!=',False)])
+        serial = self.env['stock.production.lot.serial'].search(
+            [('serial_number', '=', serial_number), ('stock_production_lot_id', '!=', False)])
         if not serial:
             raise models.ValidationError(f'La serie ingresada no existe')
         if serial.product_id not in self.material_product_ids:

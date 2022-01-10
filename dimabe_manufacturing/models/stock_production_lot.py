@@ -10,7 +10,7 @@ class StockProductionLot(models.Model):
     ]
 
     unpelled_state = fields.Selection([
-        ('draft','Borrador'),
+        ('draft', 'Borrador'),
         ('waiting', 'En Espera'),
         ('drying', 'Secando'),
         ('stopped', 'Detenido'),
@@ -260,7 +260,28 @@ class StockProductionLot(models.Model):
 
     is_unpelled_locked = fields.Boolean(string='Bloqueado')
 
-    unpelled_dried_id = fields.Many2one('unpelled.dried','Proceso de Secado')
+    unpelled_dried_id = fields.Many2one('unpelled.dried', 'Proceso de Secado')
+
+    temporary_serial_ids = fields.One2many('custom.temporary.serial', 'lot_id')
+
+    @api.multi
+    def test(self):
+        for item in self:
+            wiz_id = self.env['wizard.generate.temporary.serial'].create({
+                'lot_id': item.id
+            })
+            view_id = self.env.ref('dimabe_manufacturing.wizard_generate_temporary_serial_form_2')
+            return {
+                'name': "Generacion de Etiqueta",
+                'type': "ir.actions.act_window",
+                'view_type': 'form',
+                'view_model': 'form',
+                'res_model': 'wizard.generate.temporary.serial',
+                'views': [(view_id.id, 'form')],
+                'target': 'new',
+                'res_id': wiz_id.id,
+                'context': self.env.context
+            }
 
     def do_change_date_best(self):
         for item in self:

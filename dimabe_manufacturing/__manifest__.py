@@ -101,6 +101,8 @@
         'reports/stock/discart_service_report.xml',
         'reports/stock/calibrate_service_report.xml',
         'reports/stock/vain_service.xml',
+        'wizard/wizard_generate_temporary_serial.xml',
+        'wizard/confirm_re_print_serial.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

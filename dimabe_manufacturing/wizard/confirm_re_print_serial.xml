@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="confirm_re_print_serial" model="ir.ui.view">
+            <field name="name">Confirmar Re-Impresion</field>
+            <field name="model">confirm.re_print.serial</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        ¿Esta seguro que se desea volver a imprimir esta etiqueta?
+                    </sheet>
+                    <footer>
+                        <button name="print" type="object" string="Imprimir"/>
+                        <button name="cancel" type="button"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
