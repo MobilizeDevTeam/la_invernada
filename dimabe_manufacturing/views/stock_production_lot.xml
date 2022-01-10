@@ -228,7 +228,7 @@
         <field name="name">Vista General Despelonado Entrada</field>
         <field name="res_model">stock.production.lot</field>
         <field name="view_mode">tree</field>
-        <field name="domain">[('unpelled_state', 'in', ['waiting', 'drying'])]</field>
+        <field name="domain">[('unpelled_state', 'in', ['draft','waiting', 'drying'])]</field>
         <field name="view_id" ref="stock_production_lot_in_dashboard_tree_view"/>
     </record>
     <menuitem name="Vista General Despelonado Entrada"
