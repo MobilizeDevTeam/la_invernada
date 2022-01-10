@@ -19,6 +19,7 @@
                             name="finish_unpelled_dried"
                             type="object"
                             attrs="{'invisible':[('can_done','=',False)]}"
+                            confirm="¿Desea finalizar el proceso actual?"
                     />
                     <field name="show_new_process" invisible="1"/>
                     <button string="Comenzar Nuevo Proceso"
