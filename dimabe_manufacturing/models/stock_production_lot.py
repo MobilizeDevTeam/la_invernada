@@ -805,7 +805,7 @@ class StockProductionLot(models.Model):
             return None if not stock_quant else stock_quant
         else:
             return self.quant_ids.filtered(
-                lambda a: a.location_id.name == 'Stock'
+                lambda a: a.location_id.usage == 'internal'
             )
 
     @api.multi
