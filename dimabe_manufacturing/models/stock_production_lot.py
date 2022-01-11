@@ -1132,3 +1132,4 @@ class StockProductionLot(models.Model):
             quant = self.env['stock.quant'].search([('lot_id.id', '=', lot.id), ('location_id.usage', '=', 'internal')])
             if quant:
                 quant.sudo().unlink()
+
