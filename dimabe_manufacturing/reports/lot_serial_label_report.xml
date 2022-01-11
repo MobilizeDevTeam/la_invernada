@@ -114,7 +114,7 @@
                                 </div>
                                 <div style="text-align:center;">
                                     <img
-                                            t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('https://dimabe-odoo-la-invernada-test-3820210.dev.odoo.com/', 'Code128',lot_serial_id.serial_number,550, 45)"
+                                            t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (lot_serial_id.get_full_url(), 'Code128',lot_serial_id.serial_number,550, 45)"
                                     />
                                     <span t-field="lot_serial_id.serial_number"/>
                                 </div>
