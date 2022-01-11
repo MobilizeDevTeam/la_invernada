@@ -23,5 +23,6 @@ class WizardGenerateTemporarySerial(models.TransientModel):
                     months=self.lot_id.label_durability_id.month_qty),
                 'harvest': fields.Date.today().year,
                 'label_durability_id': self.lot_id.label_durability_id.id,
+                'net_weight' : self.lot_id.standard_weight,
             })
             counter += 1

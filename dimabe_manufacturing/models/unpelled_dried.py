@@ -175,8 +175,7 @@ class UnpelledDried(models.Model):
                 ('producer_id', '=', item.producer_id.id),
                 ('product_id', '=', item.product_in_id.id),
                 ('id', 'not in', item.oven_use_ids.mapped('used_lot_id.id')),
-                ('balance', '>', 0)
-            ]).filtered(lambda x: not x.unpelled_dried_id)
+            ]).filtered(lambda x: not x.unpelled_dried_id and (x.balance > 0 or x.product_qty > 0))
             item.total_pending_lot_count = len(lot_ids)
 
     @api.multi

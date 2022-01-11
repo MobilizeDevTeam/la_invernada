@@ -21,7 +21,11 @@ class CustomTemporarySerial(models.Model):
 
     canning_id = fields.Many2one('product.product', 'Envase')
 
+    net_weight = fields.Float('Peso Neto', digits=dp.get_precision('Product Unit of Measure'))
+
     gross_weight = fields.Float('Peso Bruto', digits=dp.get_precision('Product Unit of Measure'))
 
-    label_durability_id = fields.Many2one('label.durability','Durabilidad Etiqueta')
+    label_durability_id = fields.Many2one('label.durability', 'Durabilidad Etiqueta')
+
+    production_id = fields.Many2one('mrp.production')
 
