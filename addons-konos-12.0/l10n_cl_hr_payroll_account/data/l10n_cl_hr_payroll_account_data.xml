@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+<!--        &lt;!&ndash; Alcance Líquido &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_44" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210501')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Mutual &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_23" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210405')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; AFP x Pagar &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_25" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210401')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Isapre x Pagar &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_28" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210404')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Caja de Compensación &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_33" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210402')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Fonasa x Pagar &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_34" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210403')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Impuesto Unico &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_36" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210703')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Cotización ISL &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_45" model="hr.salary.rule">-->
+<!--            &lt;!&ndash; Accounts Payable &ndash;&gt;-->
+<!--            <field name="account_credit" search="[('code', '=', '210405')]"/>-->
+<!--        </record>-->
+
+
+<!--        &lt;!&ndash; Total Gastos Remuneraciones &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_40" model="hr.salary.rule">-->
+<!--            <field name="account_debit" search="[('code', '=', '510101')]"/>-->
+<!--        </record>-->
+<!--        &lt;!&ndash; Total Porte Patronal &ndash;&gt;-->
+<!--        <record id="l10n_cl_hr.hr_rule_43" model="hr.salary.rule">-->
+<!--            <field name="account_debit" search="[('code', '=', '510102')]"/>-->
+<!--        </record>       -->
+
+    </data>
+</odoo>
