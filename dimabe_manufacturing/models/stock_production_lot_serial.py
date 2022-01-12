@@ -173,6 +173,10 @@ class StockProductionLotSerial(models.Model):
 
     best_before_date_new = fields.Date(string='Consumir antes de')
 
+    to_print = fields.Boolean(string='Imprimir')
+
+    printed = fields.Boolean(string='Impresa')
+
     @api.multi
     def compute_available_weight(self):
         for item in self:
@@ -472,10 +476,30 @@ class StockProductionLotSerial(models.Model):
         if 'producer_id' in self.env.context:
             for item in self:
                 item.producer_id = self.env.context['producer_id']
+        if not self.printed:
+            self.write({
+                'printed': True
+            })
+            return self.env.ref(
+                'dimabe_manufacturing.action_stock_production_lot_serial_label_report'
+            ).report_action(self)
+        else:
+            wiz_id = self.env['confirm.re_print.serial'].create({
+                'serial_id': self.id,
+            })
+            view_id = self.env.ref('dimabe_manufacturing.confirm_re_print_serial')
+            return {
+                'name': "Reimpresion de Etiqueta",
+                'type': "ir.actions.act_window",
+                'view_type': 'form',
+                'view_model': 'form',
+                'res_model': 'confirm.re_print.serial',
+                'views': [(view_id.id, 'form')],
+                'target': 'new',
+                'res_id': wiz_id.id,
+                'context': self.env.context
+            }
 
-        return self.env.ref(
-            'dimabe_manufacturing.action_stock_production_lot_serial_label_report'
-        ).report_action(self)
 
     @api.multi
     def get_full_url(self):

@@ -10,11 +10,14 @@ class StockProductionLot(models.Model):
     ]
 
     unpelled_state = fields.Selection([
-        ('waiting', 'En Espera'),
+        ('draft', 'En Espera para ingresar'),
+        ('waiting', 'En Espera para Iniciar'),
         ('drying', 'Secando'),
+        ('stopped', 'Detenido'),
         ('done', 'Terminado')
     ],
         'Estado',
+
     )
 
     can_add_serial = fields.Boolean(
@@ -254,6 +257,31 @@ class StockProductionLot(models.Model):
     best_before_date = fields.Date(string='Consumir preferentemente antes de')
 
     change_best = fields.Boolean(string='¿Desea cambiar fecha de consumir preferentemente antes de?')
+
+    is_unpelled_locked = fields.Boolean(string='Bloqueado')
+
+    unpelled_dried_id = fields.Many2one('unpelled.dried', 'Proceso de Secado')
+
+    temporary_serial_ids = fields.One2many('custom.temporary.serial', 'lot_id')
+
+    @api.multi
+    def test(self):
+        for item in self:
+            wiz_id = self.env['wizard.generate.temporary.serial'].create({
+                'lot_id': item.id
+            })
+            view_id = self.env.ref('dimabe_manufacturing.wizard_generate_temporary_serial_form_2')
+            return {
+                'name': "Generacion de Etiqueta",
+                'type': "ir.actions.act_window",
+                'view_type': 'form',
+                'view_model': 'form',
+                'res_model': 'wizard.generate.temporary.serial',
+                'views': [(view_id.id, 'form')],
+                'target': 'new',
+                'res_id': wiz_id.id,
+                'context': self.env.context
+            }
 
     def do_change_date_best(self):
         for item in self:
@@ -770,10 +798,15 @@ class StockProductionLot(models.Model):
             })
 
     @api.model
-    def get_stock_quant(self):
-        return self.quant_ids.filtered(
-            lambda a: a.location_id.name == 'Stock'
-        )
+    def get_stock_quant(self, location_id=None):
+        if self.location_id:
+            stock_quant = self.quant_ids.filtered(
+                lambda a: a.location_id.id == location_id)
+            return None if not stock_quant else stock_quant
+        else:
+            return self.quant_ids.filtered(
+                lambda a: a.location_id.usage == 'internal'
+            )
 
     @api.multi
     def delete_all_serial(self):
@@ -862,7 +895,8 @@ class StockProductionLot(models.Model):
 
     def add_selection_serial(self, picking_id, location_id):
         pallets = self.stock_production_lot_serial_ids.filtered(
-            lambda a: a.to_add and not a.reserved_to_stock_picking_id and not a.reserved_to_production_id).mapped('pallet_id')
+            lambda a: a.to_add and not a.reserved_to_stock_picking_id and not a.reserved_to_production_id).mapped(
+            'pallet_id')
         for pallet in pallets:
             pallet.write({
                 'reserved_to_stock_picking_id': picking_id
@@ -1098,3 +1132,4 @@ class StockProductionLot(models.Model):
             quant = self.env['stock.quant'].search([('lot_id.id', '=', lot.id), ('location_id.usage', '=', 'internal')])
             if quant:
                 quant.sudo().unlink()
+

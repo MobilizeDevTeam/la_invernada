@@ -10,6 +10,10 @@ class DriedOven(models.Model):
 
     name = fields.Char('Horno')
 
+    state = fields.Selection(string="Estado",
+                             selection=[('free', 'Libre'), ('waiting', 'En espera'), ('in_use', 'En Uso')],
+                             default=lambda x: 'in_use' if x.is_in_use else 'free')
+
     is_in_use = fields.Boolean('en uso')
 
     @api.onchange('name')
@@ -28,4 +32,3 @@ class DriedOven(models.Model):
     def set_is_in_use(self, is_in_use):
         for item in self:
             item.is_in_use = is_in_use
-

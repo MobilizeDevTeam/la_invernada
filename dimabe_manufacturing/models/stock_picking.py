@@ -333,7 +333,7 @@ class StockPicking(models.Model):
             mp_move = stock_picking.get_mp_move()
             if stock_picking.picking_type_id.require_dried:
                 for move_line in mp_move.move_line_ids:
-                    move_line.lot_id.unpelled_state = 'waiting'
+                    move_line.lot_id.unpelled_state = 'draft'
             mp_move.move_line_ids.mapped('lot_id').write({
                 'stock_picking_id': stock_picking.id
             })

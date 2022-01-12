@@ -59,6 +59,13 @@ class OvenUse(models.Model):
 
     finish_active_time = fields.Integer('Fin de tiempo activo')
 
+    dried_oven_id = fields.Many2one(
+        'dried.oven',
+        string='Horno',
+        domain=[('state', '=', 'free')],
+        required=True
+    )
+
     dried_oven_ids = fields.Many2many(
         'dried.oven',
         string='Hornos',
@@ -104,13 +111,60 @@ class OvenUse(models.Model):
         string='Lote'
     )
 
+    state = fields.Selection(
+        string='Estado',
+        selection=[('draft', 'Borrador'), ('pause', 'en Pausa'),
+                   ('in_process', 'En Proceso'), ('cancel', 'Cancelado'), ('done', 'Finalizado')],
+        default=lambda self: 'draft' if not self.finish_date else 'done')
+
+    lot_locked = fields.Boolean(string='Lote Bloqueado', related='used_lot_id.is_unpelled_locked')
+
+    used_lot_ids = fields.Many2many('stock.production.lot', compute='compute_used_lot_ids')
+
+    @api.multi
+    def compute_used_lot_ids(self):
+        for item in self:
+            item.used_lot_ids = item.unpelled_dried_id.in_lot_ids
+
+    @api.multi
+    def do_lot_locked(self):
+        for item in self:
+            item.used_lot_id.write({
+                'is_unpelled_locked': True
+            })
+
+    @api.multi
+    @api.onchange('dried_oven_id')
+    def onchange_oven(self):
+        unpelled_dried_id = self.env.context['unpelled_dried_id']
+        lots = self.env['stock.production.lot'].search([
+            ('product_id', '=', self.unpelled_dried_id.product_in_id.id),
+            ('producer_id', '=',
+             self.unpelled_dried_id.producer_id.id),
+            ('balance', '>', 0), ('stock_picking_id', '!=', False)]).filtered(
+            lambda x: not x.unpelled_dried_id.id or x.unpelled_dried_id.id == unpelled_dried_id)
+        res = {
+            "domain": {
+                "dried_oven_id": [
+                    ('id', 'not in', self.unpelled_dried_id.oven_use_ids.filtered(lambda x: x.state != 'cancel').mapped(
+                        'dried_oven_id').ids),
+                    ('state', '=', 'free'),
+                    ('is_in_use', '=', False)],
+                'used_lot_id': [('id', 'in', lots.ids)]
+            }
+        }
+        return res
+
     @api.multi
     def _compute_name(self):
         for item in self:
-            tmp = ''
-            for name in item.dried_oven_ids.mapped('name'):
-                tmp += '{} '.format(name)
-            item.name = tmp
+            if len(item.dried_oven_ids) > 0:
+                tmp = ''
+                for name in item.dried_oven_ids.mapped('name'):
+                    tmp += '{} '.format(name)
+                item.name = tmp
+            else:
+                item.name = item.dried_oven_id.name
 
     @api.multi
     @api.depends('active_seconds')
@@ -120,44 +174,79 @@ class OvenUse(models.Model):
 
     @api.multi
     def unlink(self):
-
-        self.mapped('dried_oven_ids').write({
-            'is_in_use': False
-        })
-        return super(OvenUse, self).unlink()
+        if self.env.user in self.env.ref('dimabe_manufacturing.oven_manger').users:
+            self.mapped('dried_oven_ids').write({
+                'is_in_use': False
+            })
+            unpelled_dried = self.env['unpelled.dried'].search([('id', '=', self.unpelled_dried_id.id)])
+            res = super(OvenUse, self).unlink()
+            print(unpelled_dried)
+            return res
+        else:
+            raise models.ValidationError(
+                'Su usuario no cuenta con los permisos para eliminar horno de este proceso , ponerse en contacto con la persona a cargo')
 
     @api.multi
     def init_process(self):
         for item in self:
+            item.write({
+                'state': 'in_process'
+            })
             if item.init_date:
                 raise models.ValidationError('este proceso ya ha sido iniciado')
-            if not item.dried_oven_ids:
+            if not item.dried_oven_id:
                 raise models.ValidationError('Debe seleccionar el horno a iniciar')
             if not item.used_lot_id:
                 raise models.ValidationError('Debe Seleccionar un lote a secar')
             item.init_date = datetime.utcnow()
             item.init_active_time = item.init_date.timestamp()
             item.unpelled_dried_id.state = 'progress'
-            item.dried_oven_ids.update({
+            item.dried_oven_id.write({
+                'state': 'in_use',
                 'is_in_use': True
             })
             item.used_lot_id.unpelled_state = 'drying'
 
     @api.multi
+    def cancel_process(self):
+        for item in self:
+            if item.state == 'done':
+                raise models.ValidationError('Este proceso ya ha finalizado')
+            item.write({
+                'state': 'cancel',
+            })
+            item.dried_oven_id.write({
+                'is_in_use': False,
+                'state': 'free'
+            })
+            item.used_lot_id.write({
+                'unpelled_state': 'waiting'
+            })
+
+    @api.multi
     def pause_process(self):
         for item in self:
+            item.write({
+                'state': 'pause'
+            })
             item.finish_active_time = datetime.utcnow().timestamp()
             item.active_seconds += item.finish_active_time - item.init_active_time
 
     @api.multi
     def resume_process(self):
         for item in self:
+            item.write({
+                'state': 'in_process'
+            })
             item.init_active_time = datetime.utcnow().timestamp()
             item.finish_active_time = 0
 
     @api.multi
     def finish_process(self):
         for item in self:
+            item.write({
+                'state': 'done'
+            })
             if item.used_lot_id and item.used_lot_id.reception_state != 'done':
                 raise models.ValidationError(
                     'la recepción del lote {} no se encuentra en estado realizado. '
@@ -166,17 +255,16 @@ class OvenUse(models.Model):
             if item.finish_active_time == 0:
                 item.finish_active_time = item.finish_date.timestamp()
                 item.active_seconds += item.finish_active_time - item.init_active_time
-            if item.used_lot_id:
-                item.used_lot_id.stock_production_lot_serial_ids.write({
-                    'consumed':True
-                })
-            for dried_oven_id in item.dried_oven_ids:
-                if not item.unpelled_dried_id.oven_use_ids.filtered(
-                    lambda a: a.id != item.id and dried_oven_id in a.dried_oven_ids and not a.finish_date
-                ):
-                    dried_oven_id.update({
-                        'is_in_use': False
-                    })
+            item.used_lot_id.write({
+                'unpelled_state': 'done'
+            })
+            item.dried_oven_id.write({
+                'is_in_use': False,
+                'state': 'free'
+            })
+            item.unpelled_dried_id.write({
+                'can_close': True
+            })
 
     @api.multi
     def print_oven_label(self):
@@ -189,3 +277,33 @@ class OvenUse(models.Model):
         self.ensure_one()
         base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
         return base_url
+
+    @api.multi
+    def unlink(self):
+        for item in self:
+            if item.state == 'done':
+                raise models.UserError('No se puede eliminar un registro si el horno esta finalizado')
+            item.dried_oven_id.write({
+                'is_in_use': False,
+                'state': 'free'
+            })
+            item.used_lot_id.write({
+                'unpelled_state': 'draft'
+            })
+            res = super(OvenUse, self).unlink()
+            return res
+
+    @api.multi
+    def create(self, values):
+        for value in values:
+            if 'used_lot_id' in value.keys():
+                lot_id = self.env['stock.production.lot'].search([('id', '=', value['used_lot_id'])])
+                lot_id.write({
+                    'unpelled_dried_id': value['unpelled_dried_id']
+                })
+        res = super(OvenUse, self).create(values)
+        for r in res:
+            r.dried_oven_id.write({
+                'state': 'waiting'
+            })
+        return res

@@ -1,0 +1,36 @@
+<odoo>
+    <record id="custom_oven_manager_collection_group_form" model="ir.ui.view">
+        <field name="name">Administrador de Hornos</field>
+        <field name="model">custom.collection.group</field>
+        <field name="arch" type="xml">
+            <form string="Administrador de Hornos">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Title" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="user_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="login"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="custom_oven_manager_collection_group_act_window" model="ir.actions.act_window">
+        <field name="name">Grupo de Administracion de Hornos</field>
+        <field name="res_model">custom.collection.group</field>
+        <field name="view_id" ref="custom_oven_manager_collection_group_form"/>
+        <field name="res_id" ref="custom_oven_manager_collection_group"/>
+        <field name="view_mode">form</field>
+    </record>
+    <menuitem name="Configuracion Administracion de Hornos" id="custom_oven_manager_collection_group_menu"
+              parent="mrp.menu_mrp_configuration" action="custom_oven_manager_collection_group_act_window"/>
+</odoo>

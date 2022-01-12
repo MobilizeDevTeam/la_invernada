@@ -150,6 +150,10 @@ class MrpWorkorder(models.Model):
 
     to_done = fields.Boolean('Para Finalizar')
 
+    supervisor_name = fields.Char('Supervisor')
+
+    turn_name = fields.Char('Turno')
+
     @api.multi
     def _compute_producers_id(self):
         for item in self:
@@ -221,11 +225,6 @@ class MrpWorkorder(models.Model):
             ])
             if item not in stock_move.active_move_line_ids.mapped('lot_id'):
                 if not self.lot_produced_id:
-                    lot_id = self.production_finished_move_line_ids.filtered(
-                        lambda a: a.product_id.id == self.product_id.id and a.lot_id)[0].lot_id
-                    if not lot_id.stock_production_lot_serial_ids:
-                        lot_id = self.production_finished_move_line_ids.filtered(
-                            lambda a: a.lot_id.stock_production_lot_serial_ids)[0].lot_id
                     stock_move.update({
                         'active_move_line_ids': [
                             (0, 0, {
@@ -233,7 +232,8 @@ class MrpWorkorder(models.Model):
                                 'lot_id': item.id,
                                 'qty_done': sum(self.potential_serial_planned_ids.filtered(
                                     lambda a: a.stock_production_lot_id.id == item.id).mapped('display_weight')),
-                                'lot_produced_id': lot_id.id,
+                                'lot_produced_id': self.production_finished_move_line_ids.filtered(
+                                    lambda a: a.product_id.id == self.product_id.id and a.lot_id)[0].lot_id,
                                 'workorder_id': self.id,
                                 'production_id': self.production_id.id,
                                 'product_uom_id': stock_move.product_uom.id,

@@ -31,8 +31,10 @@
 
     # always loaded
     'data': [
+        'security/groups.xml',
         'security/ir.model.access.csv',
         'data/update_data_from_upgrade.xml',
+        'security/collection_groups.xml',
         'views/confirm_order_reserved.xml',
         'views/confirm_principal_order.xml',
         'views/mrp_workorder.xml',
@@ -69,6 +71,7 @@
         'views/mrp_eco.xml',
         'views/generate_label_wizard.xml',
         'views/change_date_lot.xml',
+        'views/custom_oven_manager_group.xml',
         'reports/stock/raw_report.xml',
         'reports/stock/raw_service_report.xml',
         'reports/stock/pt_report.xml',
@@ -98,6 +101,8 @@
         'reports/stock/discart_service_report.xml',
         'reports/stock/calibrate_service_report.xml',
         'reports/stock/vain_service.xml',
+        'wizard/wizard_generate_temporary_serial.xml',
+        'wizard/confirm_re_print_serial.xml'
     ],
     # only loaded in demonstration mode
     'demo': [

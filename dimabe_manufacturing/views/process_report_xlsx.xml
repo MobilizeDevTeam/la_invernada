@@ -8,7 +8,7 @@
                 <form>
                     <group>
                         <field name="year"/>
-                        <field name="process_selection"/>
+                        <field name="process_id"/>
                     </group>
                     <footer>
                         <button type="object" string="Generar Reporte" name="generate_xlsx"/>

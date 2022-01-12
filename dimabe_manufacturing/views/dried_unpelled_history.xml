@@ -1,143 +1,132 @@
 <odoo>
-  <record id="dried_unpelled_history_tree_view" model="ir.ui.view">
-    <field name="name">Listado de Historial</field>
-    <field name="model">dried.unpelled.history</field>
-    <field name="arch" type="xml">
-      <tree>
-        <field name="create_date" invisible="1"/>
-        <field name="in_lot_ids" widget="many2many_tags" />
-        <field name="producer_id"/>
-        <field name="lot_guide_numbers" />
-        <field name="in_product_variety" />
-        <field name="picking_type_id" />
-        <field name="init_date" />
-        <field name="finish_date" />
-        <field name="active_time" />
-        <field name="in_product_id"/>
-        <field name="total_in_weight"/>
-        <field name="total_out_weight"/>
-        <field name="performance"/>
-        <field name="oven_use_ids" widget="many2many_tags"/>
-        <field name="out_lot_id"/>
-        <field name="out_product_id"/>
-      </tree>
-    </field>
-  </record>
-
-  <record id="dried_unpelled_history_action" model="ir.actions.act_window">
-    <field name="name">Historial</field>
-    <field name="res_model">dried.unpelled.history</field>
-    <field name="view_mode">tree,form</field>
-  </record>
-
-  <record id="dried_unpelled_history_form_view" model="ir.ui.view">
-    <field name="name">Historial</field>
-    <field name="model">dried.unpelled.history</field>
-    <field name="arch" type="xml">
-      <form>
-        <h1 class="d-none d-md-block">
-          <field name="name"/>
-        </h1>
-        <field name="create_date"/>
-        <group>
-          <group>
-            <field name="producer_id"/>
-
-            <field name="in_product_id"/>
-
-            <field name="oven_use_ids">
-              <tree>
-                <field name="dried_oven_ids" widget="many2many_tags"/>
-                <field name="stock_picking_id" widget="many2onebutton"/>
+    <record id="dried_unpelled_history_tree_view" model="ir.ui.view">
+        <field name="name">Listado de Historial</field>
+        <field name="model">dried.unpelled.history</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="create_date" invisible="1"/>
+                <field name="in_lot_ids" widget="many2many_tags"/>
+                <field name="producer_id"/>
+                <field name="lot_guide_numbers"/>
+                <field name="in_product_variety"/>
+                <field name="picking_type_id"/>
                 <field name="init_date"/>
                 <field name="finish_date"/>
                 <field name="active_time"/>
-              </tree>
-            </field>
+                <field name="in_product_id"/>
+                <field name="total_in_weight"/>
+                <field name="total_out_weight"/>
+                <field name="performance"/>
+                <field name="oven_use_ids" widget="many2many_tags"/>
+                <field name="out_lot_id"/>
+                <field name="out_product_id"/>
+            </tree>
+        </field>
+    </record>
 
-            <field name="out_product_id"/>
-            <field name="out_lot_id"/>
-            <field name="can_edit" invisible="1" />
-            <field name="out_serial_ids"
-                   attrs="{'readonly':[('can_edit','=',False)]}"
-            >
-              <tree editable="bottom">
-                <field name="stock_production_lot_id" readonly="1"/>
-                <field name="consumed" readonly="1"/>
-                <field name="display_weight" readonly="1" />
-                <field name="serial_number" readonly="1"/>
-                <field  name="gross_weight"  />
-                <button name="print_serial_label"
-                        type="object" string="Imprimir"
-                        context="{'producer_id': parent.producer_id}"
-                />
-              </tree>
-            </field>
-          </group>
-          <group>
-            <field name="total_in_weight"/>
+    <record id="dried_unpelled_history_action" model="ir.actions.act_window">
+        <field name="name">Historial</field>
+        <field name="res_model">dried.unpelled.history</field>
+        <field name="view_mode">tree,form</field>
+    </record>
 
-            <field name="total_out_weight"/>
+    <record id="dried_unpelled_history_form_view" model="ir.ui.view">
+        <field name="name">Historial</field>
+        <field name="model">dried.unpelled.history</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Nombre" readonly="1"/>
+                        </h1>
+                        <group>
+                            <field name="can_adjust" invisible="1"/>
+                            <field name="total_in_weight"/>
+                            <field name="total_out_weight"/>
+                            <field name="performance"/>
+                            <field name="origin_location_id"/>
+                            <field name="dest_location_id"/>
+                            <field name="out_serial_sum" invisible="1"/>
+                            <button name="adjust_stock" string="Ajustar Diferencia de Stock" type="object"
+                                    class="oe_highlight" attrs="{'invisible':[('can_adjust','=',False)]}"/>
+                        </group>
+                        <group>
+                            <field name="producer_id"/>
+                            <field name="is_old_version" invisible="1"/>
+                            <field name="in_product_id"/>
+                            <field name="oven_use_ids">
+                                <tree>
+                                    <field name="dried_oven_id"
+                                           attrs="{'column_invisible': [('parent.is_old_version','=',True)]}"/>
+                                    <field name="dried_oven_ids" widget="many2many_tags"
+                                           attrs="{'column_invisible': [('parent.is_old_version','=',False)]}"/>
+                                    <field name="stock_picking_id" widget="many2onebutton"/>
+                                    <field name="init_date"/>
+                                    <field name="finish_date"/>
+                                    <field name="active_time"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="out_product_id"/>
+                            <field name="out_lot_id"/>
+                            <field name="can_edit" invisible="1"/>
+                            <field name="out_serial_ids">
+                                <tree editable="bottom">
+                                    <field name="stock_production_lot_id" readonly="1"/>
+                                    <field name="consumed" readonly="1"/>
+                                    <field name="display_weight"/>
+                                    <field name="serial_number" readonly="1"/>
+                                    <field name="gross_weight"/>
+                                    <button type="object" name="print_serial_label" string="Imprimir"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-            <field name="performance"/>
 
-            <field name="origin_location_id"/>
+    <record id="dried_unpelled_history_out_dashboard_tree_view" model="ir.ui.view">
+        <field name="name">Listado de Salidas Despelonado</field>
+        <field name="model">dried.unpelled.history</field>
+        <field name="arch" type="xml">
+            <tree default_order="create_date desc">
+                <field name="create_date" invisible="1"/>
+                <field name="in_lot_ids" widget="many2many_tags"/>
+                <field name="producer_id"/>
+                <field name="lot_guide_numbers"/>
+                <field name="in_product_variety"/>
+                <field name="picking_type_id"/>
+                <field name="init_date"/>
+                <field name="finish_date"/>
+                <field name="active_time"/>
+                <field name="dried_oven_ids" widget="many2many_tags"/>
+                <field name="out_lot_id"/>
+                <field name="out_serial_count"/>
+                <field name="total_in_weight"/>
+                <field name="total_out_weight"/>
+                <field name="performance"/>
+            </tree>
+        </field>
+    </record>
 
-            <field name="dest_location_id"/>
+    <record id="dried_unpelled_history_out_dashboard_action" model="ir.actions.act_window">
+        <field name="name">Vista General Despelonado Salida</field>
+        <field name="res_model">dried.unpelled.history</field>
+        <field name="view_mode">tree,form</field>
+        <field name="views" ref="dimabe_manufacturing.dried_unpelled_history_out_dashboard_tree_view"/>
 
-            <field name="out_serial_sum" invisible="1"/>
+    </record>
 
-            <button name="adjust_stock"
-                    string="Ajustar Diferencia de Stock"
-                    type="object"
-                    class="oe_highlight"
-                    attrs="{'invisible': [('out_serial_sum','=', 'total_out_weight')]}"
-                    groups="base.group_system"
-            />
-
-          </group>
-        </group>
-      </form>
-    </field>
-  </record>
-
-
-  <record id="dried_unpelled_history_out_dashboard_tree_view" model="ir.ui.view">
-    <field name="name">Listado de Salidas Despelonado</field>
-    <field name="model">dried.unpelled.history</field>
-    <field name="arch" type="xml">
-      <tree default_order="create_date desc">
-        <field name="create_date" invisible="1"/>
-        <field name="in_lot_ids" widget="many2many_tags"/>
-        <field name="producer_id"/>
-        <field name="lot_guide_numbers"/>
-        <field name="in_product_variety"/>
-        <field name="picking_type_id"/>
-        <field name="init_date"/>
-        <field name="finish_date"/>
-        <field name="active_time"/>
-        <field name="dried_oven_ids" widget="many2many_tags"/>
-        <field name="out_lot_id"/>
-        <field name="out_serial_count"/>
-        <field name="total_in_weight"/>
-        <field name="total_out_weight"/>
-        <field name="performance"/>
-      </tree>
-    </field>
-  </record>
-
-  <record id="dried_unpelled_history_out_dashboard_action" model="ir.actions.act_window">
-    <field name="name">Vista General Despelonado Salida</field>
-    <field name="res_model">dried.unpelled.history</field>
-    <field name="view_mode">tree,form</field>
-    <field name="views" ref="dimabe_manufacturing.dried_unpelled_history_out_dashboard_tree_view"/>
-
-  </record>
-
-  <menuitem name="Vista General Depelonado Salida"
-            id="dried_unpelled_history_out_dashboard_menu"
-            parent="mrp.menu_mrp_reporting"
-            action="dried_unpelled_history_out_dashboard_action"
-  />
+    <menuitem name="Vista General Depelonado Salida"
+              id="dried_unpelled_history_out_dashboard_menu"
+              parent="mrp.menu_mrp_reporting"
+              action="dried_unpelled_history_out_dashboard_action"
+    />
 
 </odoo>

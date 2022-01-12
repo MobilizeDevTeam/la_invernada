@@ -47,7 +47,7 @@
             <field name="view_mode">tree,graph,form,pivot</field>
             <field name="view_id" ref="view_stock_match_service_report_tree"/>
             <field name="domain">
-                [("product_id.categ_id.name", "in", ("Producto Semi-elaborado / Envasado NSC Servicio","Partido Mecánico/Láser Servicio"))]
+                [('product_id.default_code','like','PSES014')]
             </field>
         </record>
         <menuitem id="stock_report_match_service_tree_menu"
@@ -57,5 +57,4 @@
                   parent="stock_report_menu"
         />
     </data>
-
 </odoo>

@@ -432,7 +432,7 @@ class StockPicking(models.Model):
                     m_move = self.get_pt_move()
                 if not m_move:
                     m_move = self.get_product_move()
-                if m_move:
+                if m_move and self.picking_type_id.require_dried:
                     m_move.product_id.update_kg(product_id=m_move.product_id.id)
                     m_move.product_id.get_and_update(product_id=m_move.product_id.id)
 

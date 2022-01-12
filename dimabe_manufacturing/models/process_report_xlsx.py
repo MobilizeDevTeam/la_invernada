@@ -7,65 +7,13 @@ from datetime import datetime
 class ProcessReport(models.TransientModel):
     _name = 'process.report.xlsx'
 
-    process_selection = fields.Selection(
-        [('ncc', 'Informe de Proceso Envasado NCC'), ('laser', 'Informe de Proceso Mecanico/Laser'),
-         ('manual', 'Informe de Proceso Partido Manual Calidad'), ('nsc', 'Informe de Proceso Envasado NSC'),
-         ('calibrate', 'Informe de Proceso Calibrado'), ('washed', 'Informe de Proceso Lavado'),
-         ('re-laser', 'Informe de Re-Proceso Descarte laser'),
-         ('service_ncc', 'Informe de Proceso Envasado NCC Servicio'),
-         ('service_nsc', 'Informe de Proceso Envasado NSC Servicio'),
-         ('service_calibrate', 'Informe de Proceso Calibrado Servicio'),
-         ('service_washed', 'Informe de Proceso Lavado Servicio'),
-         ('service_laser', 'Informe de Proceso Mecanico/Laser Servicio'),
-         ('service_re_laser', 'Informe de Re-Proceso Descarte Laser Servicio'),
-         ('service_manual', 'Informe de Proceso Manuel Calidad Servicio')
-         ])
+    process_id = fields.Many2one('mrp.workcenter', string="Centro de Produccion")
 
     year = fields.Integer('Año', default=datetime.now().year)
 
-
     @api.multi
     def generate_xlsx(self):
-        if self.process_selection == 'ncc':
-            dict_data = self.generate_xlsx_process(
-                [('workcenter_id.name', '=', '320-Proceso Envasado NCC')],
-                'Proceso NCC')
-        if self.process_selection == 'laser':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code','in',('400-PPM','405-PL'))],
-                                                   'Proceso Partido Mecanico/Laser')
-        if self.process_selection == 'manual':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '500-PPMC')],
-                                                   'Proceso Partido Manual Calidad')
-        if self.process_selection == 'nsc':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '420-PENSC')], 'Proceso NSC')
-        if self.process_selection == 'calibrate':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '300-PC')], 'Proceso Calibrado')
-        if self.process_selection == 'washed':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', 'in', ('310-PLV','310-PL'))], 'Proceso Lavado')
-        if self.process_selection == 're-laser':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '410-PDL')],
-                                                   'Re-Proceso Descarte Láser')
-        if self.process_selection == 'service_ncc':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '860-PENCCS')],
-                                                   'Proceso Envasado NCC Servicio')
-        if self.process_selection == 'service_nsc':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '890-PENSCS')],
-                                                   'Proceso Envasado NSC Servicio')
-        if self.process_selection == 'service_calibrate':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '840-PCS')],
-                                                   'Proceso Calibrado Servicio')
-        if self.process_selection == 'service_washed':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '850-PLS')], 'Proceso Lavado Servicio')
-        if self.process_selection == 'service_laser':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '870-PPMS')],
-                                                   'Proceso Partido Mecanico/Laser Servicio')
-        if self.process_selection == 'service_re_laser':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '880-PDLS')],
-                                                   'Re-Proceso Descarte Láser Servicio')
-        if self.process_selection == 'service_manual':
-            dict_data = self.generate_xlsx_process([('workcenter_id.code', '=', '870-PPMS')],
-                                                   'Proceso Partido Manual Calidad Servicio')
-
+        dict_data = self.generate_xlsx_process(process_id=self.process_id)
         attachment_id = self.env['ir.attachment'].sudo().create({
             'name': dict_data['file_name'],
             'datas_fname': dict_data['file_name'],
@@ -79,7 +27,7 @@ class ProcessReport(models.TransientModel):
         }
         return action
 
-    def generate_xlsx_process(self, query, process_name):
+    def generate_xlsx_process(self,process_id):
         file_name = 'temp_report.xlsx'
         workbook = xlsxwriter.Workbook(file_name)
         text_format = workbook.add_format({
@@ -87,8 +35,8 @@ class ProcessReport(models.TransientModel):
         })
         number_format = workbook.add_format({'num_format': '#,##0.00'})
         date_format = workbook.add_format({'num_format': 'dd/mmmm/yyyy'})
-        sheet = workbook.add_worksheet(process_name)
-        processes = self.env['mrp.workorder'].search(query)
+        sheet = workbook.add_worksheet(process_id.name)
+        processes = self.env['mrp.workorder'].search([('workcenter_id.id','=',self.process_id.id)])
         processes = processes.filtered(lambda a: a.create_date.year == self.year)
         row = 0
         col = 0
@@ -124,7 +72,7 @@ class ProcessReport(models.TransientModel):
                 col += 1
                 sheet.write(row, col, serial.product_id.get_variety())
                 col += 1
-                sheet.write(row, col, serial.display_weight,number_format)
+                sheet.write(row, col, serial.display_weight, number_format)
                 row += 1
                 col = 0
         col_out = 9
@@ -155,12 +103,12 @@ class ProcessReport(models.TransientModel):
                 col_out += 1
                 sheet.write(row, col_out, serial.serial_number, text_format)
                 col_out += 1
-                sheet.write(row, col_out, serial.display_weight,number_format)
+                sheet.write(row, col_out, serial.display_weight, number_format)
                 row += 1
                 col_out = 9
 
         workbook.close()
         with open(file_name, "rb") as file:
             file_base64 = base64.b64encode(file.read())
-        report_name = f'Informe de Proceso {process_name}'
+        report_name = f'Informe de Proceso {self.process_id.name}'
         return {'file_name': report_name, 'base64': file_base64}
