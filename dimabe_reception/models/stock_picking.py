@@ -140,7 +140,7 @@ class StockPicking(models.Model):
 
     sag_code = fields.Char(
         'CSG',
-        related='partner_id.sag_code'
+        # related='partner_id.sag_code'
     )
 
     is_pt_dispatch = fields.Boolean('Es PT Despacho', compute='_compute_is_pt_dispatch')
@@ -399,8 +399,7 @@ class StockPicking(models.Model):
                     if not stock_picking.tare_weight:
                         message += 'Debe agregar kg tara \n'
                     if not stock_picking.quality_weight and \
-                            'verde' not in str.lower(stock_picking.picking_type_id.warehouse_id.name) and \
-                        not self.get_product_move():
+                            'verde' not in str.lower(stock_picking.picking_type_id.warehouse_id.name):
                         message += 'Los kilos de calidad aún no han sido registrados en el sistema,' \
                                    ' no es posible cerrar el ciclo de recepción'
                     if message:
@@ -499,22 +498,19 @@ class StockPicking(models.Model):
 
     @api.model
     def validate_mp_reception(self):
-        # return True
-        message = ''
-        if not self.guide_number or not self.guide_number > 0:
-            message = 'debe agregar número de guía \n'
-            
-        # if not self.weight_guide:
+        return True
+        # message = ''
+        # if not self.guide_number or not self.guide_number > 0:
+        #     message = 'debe agregar número de guía \n'
+        # if not self.weight_guide or not self.get_product_move():
         #     message += 'debe agregar kilos guía \n'
-        if not self.weight_guide or not self.get_product_move():
-            message += 'debe agregar kilos guía \n'
 
-        if not self.get_canning_move():
-            message += 'debe agregar envases'
-        if not self.get_mp_move() and not self.get_pt_move() and not self.get_product_move():
-            message += 'debe agregar Materia a recepcionar'
-        if message:
-            raise models.ValidationError(message)
+        # if not self.get_canning_move():
+        #     message += 'debe agregar envases'
+        # if not self.get_mp_move() and not self.get_pt_move() and not self.get_product_move():
+        #     message += 'debe agregar Materia a recepcionar'
+        # if message:
+        #     raise models.ValidationError(message)
 
     @api.multi
     def get_full_url(self):
