@@ -2,5 +2,5 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_dimabe_reception_custom_carrier,dimabe_reception.custom_carrier,model_custom_carrier,,1,1,1,1
 access_dimabe_reception_reception_alert_config,dimabe_reception.reception_alert_config,model_reception_alert_config,,1,1,1,1
 access_dimabe_reception_nut_variety,dimabe_reception.nut_variety,model_nut_variety,,1,1,1,1
-access_dimabe_reception_stock_production_lot_serial, dimabe_reception.stock_production_lot_serial,model_stock_production_lot_serial,,1,1,1,1
+access_dimabe_reception_stock_production_lot_serial,dimabe_reception.stock_production_lot_serial,model_stock_production_lot_serial,,1,1,1,1
 access_dimabe_reception_transport,dimabe_reception.transport,model_transport,,1,1,1,1
