@@ -243,7 +243,7 @@ class stock_picking(models.Model):
     def _receptor(self):
         Receptor = {}
         partner_id = self.partner_id or self.company_id.partner_id
-        if not partner_id.commercial_partner_id.vat :
+        if not partner_id.commercial_partner_id.document_number :
             raise UserError("Debe Ingresar RUT Receptor")
         Receptor['RUTRecep'] = partner_id.rut()
         Receptor['RznSocRecep'] = partner_id.commercial_partner_id.name
