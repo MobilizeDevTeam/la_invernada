@@ -21,7 +21,6 @@
             <field name="name">Series</field>
             <field name="model">stock.production.lot.serial</field>
             <field name="priority">20</field>
-            <field name="view_mode">tree,form</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="stock_production_lot_id" widget="many2onebutton"/>
@@ -43,7 +42,6 @@
             <field name="name">Series</field>
             <field name="model">stock.production.lot.serial</field>
             <field name="priority">20</field>
-            <field name="view_mode">tree,form</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="stock_production_lot_id" widget="many2onebutton"/>

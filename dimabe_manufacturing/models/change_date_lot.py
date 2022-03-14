@@ -5,6 +5,7 @@ from odoo import fields, models, api
 
 class ChangeDateLot(models.TransientModel):
     _name = 'change.date.lot'
+    _description = "Cambiar Fecha de los Lotes"
 
     lot_id = fields.Many2one('stock.production.lot', string='Lote')
 
@@ -12,9 +13,9 @@ class ChangeDateLot(models.TransientModel):
 
     packaging_date_old = fields.Date(string='Fecha Actual')
 
-    best_before_date_old = fields.Date(string='Fecha de Consumir Preferentemente antes de')
+    best_before_date_old = fields.Date(string='Fecha de Consumir Preferentemente antes de (Antigua)')
 
-    best_before_date_new = fields.Date(string='Fecha de Consumir Preferentemente antes de')
+    best_before_date_new = fields.Date(string='Fecha de Consumir Preferentemente antes de (Nueva)')
 
     def change_pack(self):
         for item in self:

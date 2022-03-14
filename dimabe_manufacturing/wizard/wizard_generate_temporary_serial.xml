@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="wizard_generate_temporary_serial_form_2" model="ir.ui.view">
+            <field name="name">Generacion de Etiquetas</field>
+            <field name="model">wizard.generate.temporary.serial</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="qty_to_generate"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="generate" type="object" string="Generar"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

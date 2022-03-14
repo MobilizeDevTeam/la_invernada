@@ -30,7 +30,7 @@
             <field name="view_mode">tree,graph,form,pivot</field>
             <field name="view_id" ref="view_stock_match_report_tree"/>
             <field name="domain">
-                [('product_id.name','like','Descarte'),('product_id.name','not like','Lavada'),('product_id.default_code','not like','PSES'),('product_id.categ_id.name', 'not in',('Envasado NSC', 'Partido Manual Calidad', 'Partido Mecánico/Láser'))]
+                [('product_id.name','like','Descarte'),('product_id.name','not like','Lavado'),('product_id.default_code','not like','PSES'),('product_id.categ_id.name', 'not in',('Envasado NSC', 'Partido Manual Calidad', 'Partido Mecánico/Láser'))]
             </field>
         </record>
         <menuitem id="stock_report_discart_tree_menu"

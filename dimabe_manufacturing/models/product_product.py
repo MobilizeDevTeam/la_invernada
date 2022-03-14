@@ -116,7 +116,7 @@ class ProductProduct(models.Model):
     def _compute_total_weight(self):
         for item in self:
             if item.tracking == 'lot':
-                lots = self.env['stock.production.lot'].search([('product_id', '=', item.id),('available_kg','>',0)])
+                lots = self.env['stock.production.lot'].search([('product_id', '=', item.id), ('available_kg', '>', 0)])
                 item.total_weight = sum(lots.mapped('available_kg'))
 
     @api.multi
@@ -163,6 +163,13 @@ class ProductProduct(models.Model):
     def update_kg(self, product_id):
         lots = self.env['stock.production.lot'].search([('product_id', '=', product_id)])
         for lot in lots:
+            if 'Verde' in lot.product_id.name:
+                oven_use = self.env['oven.use'].search([('used_lot_id', '=', lot.id)])
+                for oven in oven_use:
+                    if oven.finish_date and oven.finish_active_time:
+                        lot.stock_production_lot_serial_ids.write({
+                            'consumed': True
+                        })
             total = sum(lot.stock_production_lot_serial_ids.filtered(lambda a: not a.consumed).mapped('display_weight'))
             if total != lot.available_kg:
                 lot.sudo().write({

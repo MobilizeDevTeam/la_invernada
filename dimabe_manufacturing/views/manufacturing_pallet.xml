@@ -107,7 +107,6 @@
             </form>
         </field>
     </record>
-
     <menuitem name="Pallets"
               id="dimabe_manufacturing.manufacturing_pallet"
               parent="mrp.menu_mrp_manufacturing"

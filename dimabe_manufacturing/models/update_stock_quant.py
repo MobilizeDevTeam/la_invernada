@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class UpdateStockQuant(models.TransientModel):
     _name = 'update.stock.quant'
+    _description = "Actualizar Stock Quant"
 
     product_id = fields.Many2one('product.product', 'Producto')
 

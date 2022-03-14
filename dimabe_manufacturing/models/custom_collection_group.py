@@ -3,6 +3,7 @@ from odoo import fields, models, api
 
 class CustomCollectionGroup(models.Model):
     _name = 'custom.collection.group'
+    _description = "Grupos (Custom)"
 
     name = fields.Char('Nombre Grupo')
 

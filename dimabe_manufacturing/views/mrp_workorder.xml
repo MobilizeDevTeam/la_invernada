@@ -9,7 +9,7 @@
             <field name="company_id" eval="False"/>
         </record>
 
-        <record id="mrp_workorder_view_form_tablet_inherit" model="ir.ui.view">
+        <!-- <record id="mrp_workorder_view_form_tablet_inherit" model="ir.ui.view">
             <field name="name">tablet producción</field>
             <field name="model">mrp.workorder</field>
             <field name="inherit_id" ref="mrp_workorder.mrp_workorder_view_form_tablet"/>
@@ -60,7 +60,7 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
             </field>
-        </record>
+        </record> -->
         <record id="mrp_production_workorder_form_view_inherit" model="ir.ui.view">
             <field name="name">formulario order de trabajo</field>
             <field name="model">mrp.workorder</field>
@@ -83,6 +83,9 @@
                         <field name="supervisor_name" attrs="{'readonly': [('state', '=', 'done')]}"/>
                         <field name="turn_name" attrs="{'readonly': [('state', '=', 'done')]}"/>
                     </group>
+                </xpath>
+                <xpath expr="//sheet/group//group[1]" position="attributes">
+                    <attribute name="style">width:33%%</attribute>
                 </xpath>
                 <field name="final_lot_id" position="attributes">
                     <attribute name="readonly">1</attribute>
@@ -243,8 +246,6 @@
         </record>
 
         <record id="mrp_workorder_out_form_action" model="ir.actions.act_window.view">
-            <field name="name">action out process</field>
-            <field name="res_model">mrp.workorder</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="dimabe_manufacturing.mrp_workorder_out_form_view"/>
         </record>
