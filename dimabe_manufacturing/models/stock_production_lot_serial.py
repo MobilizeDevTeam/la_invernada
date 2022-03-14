@@ -7,6 +7,10 @@ import math
 class StockProductionLotSerial(models.Model):
     _inherit = 'stock.production.lot.serial'
 
+   # _sql_constraints = [
+   #     ('serial_uniq', 'UNIQUE(serial_number)', 'la serie ya se encuentra en el sistema.')
+   # ]
+
     production_id = fields.Many2one(
         'mrp.production',
         'Salida'
