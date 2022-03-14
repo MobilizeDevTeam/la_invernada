@@ -2,6 +2,7 @@ from odoo import models, fields, api
 class Carrier(models.Model):
 
     _name = 'custom.carrier'
+    _description = "Transporte"
 
     name = fields.Char(
         'Conductor',
