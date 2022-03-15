@@ -17,7 +17,7 @@ class DriedUnpelledHistory(models.Model):
     oven_use_ids = fields.One2many(
         'oven.use',
         'history_id',
-        'Hornos',
+        'Hornos Usados',
         readonly=True
     )
 
@@ -206,7 +206,7 @@ class DriedUnpelledHistory(models.Model):
                     sum(oven.active_seconds for oven in item.oven_use_ids) / len(item.oven_use_ids))
                 item.active_time = date_helper.int_to_time(total_active_seconds)
                 item.init_date = item.oven_use_ids[0].init_date
-                item.finish_date = item.oven_use_ids[0].finish_date
+                item.finish_date = item.oven_use_ids[-1].finish_date
 
     @api.multi
     def _compute_dried_oven_ids(self):

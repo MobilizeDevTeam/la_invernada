@@ -8,7 +8,7 @@ class MrpEco(models.Model):
         selection=[('product', 'Producto'), ('bom', 'Lista de Materiales'), ('routing', 'Ruta de produccion'),
                    ('variant', 'Variante'), ('both', 'LdM y Rutas')])
 
-    product_id = fields.Many2one('product.product')
+    product_id = fields.Many2one('product.product',string="Variante de Producto")
 
     @api.multi
     def action_generate_label(self):

@@ -50,7 +50,7 @@ class PotentialLot(models.Model):
                                          , compute='_compute_all_serial_consumed'
                                          )
 
-    producer_id = fields.Many2one('res.partner',related='stock_production_lot_id.producer_id')
+    producer_id = fields.Many2one('res.partner', related='stock_production_lot_id.producer_id')
 
     @api.multi
     def _compute_all_serial_consumed(self):
@@ -59,7 +59,6 @@ class PotentialLot(models.Model):
                 lambda a: a.consumed is False and (
                         a.reserved_to_production_id == item.mrp_production_id or not a.reserved_to_production_id)
             ))
-
 
     @api.multi
     def _compute_potential_serial_ids(self):
@@ -77,10 +76,15 @@ class PotentialLot(models.Model):
             )
 
     @api.model
-    def get_stock_quant(self):
-        return self.stock_production_lot_id.quant_ids.filtered(
-            lambda a: a.location_id.name == 'Stock'
-        )
+    def get_stock_quant(self, location_id=None):
+        if self.location_id:
+            stock_quant = self.stock_production_lot_id.quant_ids.filtered(
+                lambda a: a.location_id.id == location_id)
+            return None if not stock_quant else stock_quant
+        else:
+            return self.stock_production_lot_id.quant_ids.filtered(
+                lambda a: a.location_id.name == 'Stock'
+            )
 
     @api.model
     def get_production_quant(self):

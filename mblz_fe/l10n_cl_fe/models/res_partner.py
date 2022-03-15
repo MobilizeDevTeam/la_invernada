@@ -78,7 +78,7 @@ class ResPartner(models.Model):
             d = self.document_number.replace(".", "").split("-")
             rut = str(int(d[0])) + "-" + d[1]
         return rut
-    
+
     # @api.multi
     # def write(self, vals):
     #     if vals.get('active') is False:
@@ -418,14 +418,14 @@ class ResPartner(models.Model):
         except Exception as ex:
             _logger.error(tools.ustr(ex))
 
-    @api.onchange("name")
-    def fill_partner(self):
-        if self.sync:
-            return
-        if self.document_number and self.check_vat_cl(self.document_number.replace(".", "").replace("-", "")):
-            self.get_remote_user_data(self.document_number)
-        elif self.name and self.check_vat_cl(self.name.replace(".", "").replace("-", "")):
-            self.get_remote_user_data(self.name)
+    # @api.onchange("name")
+    # def fill_partner(self):
+    #     if self.sync:
+    #         return
+    #     if self.document_number and self.check_vat_cl(self.document_number.replace(".", "").replace("-", "")):
+    #         self.get_remote_user_data(self.document_number)
+    #     elif self.name and self.check_vat_cl(self.name.replace(".", "").replace("-", "")):
+    #         self.get_remote_user_data(self.name)
 
     # @api.model
     # def _check_need_update(self):

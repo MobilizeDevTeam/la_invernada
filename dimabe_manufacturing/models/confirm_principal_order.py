@@ -9,12 +9,13 @@ from odoo.tools import date_utils
 
 class ConfirmPrincipalOrder(models.TransientModel):
     _name = 'confirm.principal.order'
+    _description = "Seleccionar Pedido Principal"
 
-    sale_ids = fields.Many2many('sale.order')
+    sale_ids = fields.Many2many('sale.order',string="Pedidos")
 
-    sale_id = fields.Many2one('sale.order')
+    sale_id = fields.Many2one('sale.order',string="Pedido")
 
-    picking_id = fields.Many2one('stock.picking')
+    picking_id = fields.Many2one('stock.picking',string="Transferencia")
 
     custom_dispatch_line_ids = fields.Many2many('custom.dispatch.line')
 

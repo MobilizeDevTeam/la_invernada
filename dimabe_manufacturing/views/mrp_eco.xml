@@ -12,7 +12,7 @@
                     <button name="action_generate_label" type="object" string="Generar Etiqueta"/>
                 </xpath>
                 <xpath expr="//field[@name='product_tmpl_id']" position="after">
-                    <field name="product_id"
+                    <field name="product_id" string="Producto"
                            attrs="{'invisible': [('type','!=','variant')],'required': [('type','=','variant')],'readonly': [('state','!=','confirmed')]}"
                            domain="[('product_tmpl_id','=',product_tmpl_id)]"/>
                 </xpath>

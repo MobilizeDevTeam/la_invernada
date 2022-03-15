@@ -3,6 +3,7 @@ from odoo import fields, models, api
 
 class CustomDispatchLine(models.Model):
     _name = 'custom.dispatch.line'
+    _description = "Despachos"
 
     sale_id = fields.Many2one('sale.order', 'Pedido')
 

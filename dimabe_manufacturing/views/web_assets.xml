@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="assets_backend" name="one2many_selectable" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/dimabe_manufacturing/static/src/js/multi_selection_widget.js"></script>
+            </xpath>
+        </template>
+    </data>
+</odoo>
