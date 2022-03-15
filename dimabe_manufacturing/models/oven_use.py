@@ -21,7 +21,7 @@ class OvenUse(models.Model):
 
     finish_date = fields.Datetime('Termino de Proceso')
 
-    active_seconds = fields.Integer('Tiempo Transcurrido')
+    active_seconds = fields.Integer('Tiempo Transcurrido (Seg)')
 
     active_time = fields.Char(
         'Tiempo Transcurrido',
@@ -63,7 +63,8 @@ class OvenUse(models.Model):
         'dried.oven',
         string='Horno',
         domain=[('state', '=', 'free')],
-        required=True
+        required=True,
+        nullable=True
     )
 
     dried_oven_ids = fields.Many2many(

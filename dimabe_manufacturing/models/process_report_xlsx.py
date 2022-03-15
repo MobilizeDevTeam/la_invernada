@@ -6,6 +6,7 @@ from datetime import datetime
 
 class ProcessReport(models.TransientModel):
     _name = 'process.report.xlsx'
+    _description = "Reporte de Procesos"
 
     process_id = fields.Many2one('mrp.workcenter', string="Centro de Produccion")
 

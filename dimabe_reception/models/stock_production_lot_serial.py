@@ -4,6 +4,7 @@ from odoo.addons import decimal_precision as dp
 
 class StockProductionLotSerial(models.Model):
     _name = 'stock.production.lot.serial'
+    _description = "Numero de Serie"
 
     name = fields.Char(
         'Serie',
@@ -35,8 +36,9 @@ class StockProductionLotSerial(models.Model):
     )
 
     serial_number = fields.Char(
-        'Serie'
+        'Numero Serie'
     )
+
 
     @api.multi
     def _compute_display_weight(self):

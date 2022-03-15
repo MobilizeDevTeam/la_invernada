@@ -6,6 +6,7 @@ _logger = logging.getLogger(__name__)
 
 class ReceptionAlertConfig(models.Model):
     _name = 'reception.alert.config'
+    _description = "Alerta de Recepcion"
 
     hr_alert = fields.Float(
         'hr para alerta',

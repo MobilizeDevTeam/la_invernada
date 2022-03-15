@@ -101,7 +101,8 @@ class MrpProduction(models.Model):
 
     product_lot = fields.Many2one(
         'product.product',
-        related="stock_lots.product_id"
+        related="stock_lots.product_id",
+        string="Producto del Lote"
     )
 
     requested_qty = fields.Float(
@@ -239,6 +240,9 @@ class MrpProduction(models.Model):
     @api.multi
     def button_mark_done(self):
         self.calculate_done()
+        final_lot_id = self.finished_move_line_ids.filtered(lambda x: x.product_id.id == self.product_id.id)
+        if len(final_lot_id.lot_id.temporary_serial_ids) > 0:
+            final_lot_id.lot_id.temporary_serial_ids.unlink()
         for item in self.workorder_ids:
             item.organize_move_line()
         for fin in self.finished_move_line_ids:
@@ -251,6 +255,9 @@ class MrpProduction(models.Model):
                 fin.write({
                     'state': 'draft',
                     'qty_done': sum(fin.lot_id.stock_production_lot_serial_ids.mapped('display_weight'))
+                })
+                fin.lot_id.write({
+                    'is_finished': True
                 })
                 fin.write({
                     'state': 'done'

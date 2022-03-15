@@ -6,6 +6,7 @@ import base64
 
 class StockReportXlsx(models.TransientModel):
     _name = 'stock.report.xlsx'
+    _description = "Reporte de Existencia"
 
     year = fields.Integer('Cosecha')
 

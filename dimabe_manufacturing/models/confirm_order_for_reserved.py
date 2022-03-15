@@ -4,14 +4,15 @@ from datetime import date
 
 class ConfirmOrderForReserved(models.TransientModel):
     _name = 'confirm.order.reserved'
+    _description = "Seleccionar Orden a reservar"
 
     sale_ids = fields.Many2many('sale.order')
 
     sale_id = fields.Many2one('sale.order', 'Order')
 
-    picking_id = fields.Many2one('stock.picking', 'Picking')
+    picking_id = fields.Many2one('stock.picking', 'Despacho')
 
-    picking_principal_id = fields.Many2one('stock.picking')
+    picking_principal_id = fields.Many2one('stock.picking',string="Despachos")
 
     lot_id = fields.Many2one('stock.production.lot', 'Lote')
 

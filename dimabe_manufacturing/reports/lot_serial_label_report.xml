@@ -475,129 +475,132 @@
             </t>
         </t>
     </template>
-<!--    <template id="report_custom_temporary_serial">-->
-<!--        <t t-call="web.html_container">-->
-<!--            <div class="page">-->
-<!--                <t t-set="counter" t-value="1"/>-->
-<!--                <t t-foreach="docs" t-as="serial">-->
-<!--                    <div style="text-align:right;font-size:8px;">-->
-<!--                            <t t-if="'Con' in serial.product_id.get_species()">-->
-<!--                                <strong>CONTAINS INSHELL WALNUT - CONTIENE NUEZ CON CÁSCARA</strong>-->
-<!--                            </t>-->
-<!--                            <t t-elif="'Sin' in serial.product_id.get_species()">-->
-<!--                                <strong>CONTAINS SHELLED WALNUT - CONTIENE NUEZ SIN CÁSCARA</strong>-->
-<!--                            </t>-->
-<!--                            <t t-else="">-->
-<!--                                <strong>CONTAINS WALNUT - CONTIENE NUEZ</strong>-->
-<!--                            </t>-->
-<!--                        </div>-->
-<!--                    <table style="font-size:14px;">-->
-<!--                            <tr>-->
-<!--                                <th style="border-top:1px solid;border-bottom:1px solid" colspan="2">-->
-<!--                                    <t t-if="serial.product_id.label_name">-->
-<!--                                        <span t-field="serial.product_id.label_name"/>-->
-<!--                                    </t>-->
-<!--                                    <t t-else="">-->
-<!--                                        <span t-field="serial.product_id.display_name"/>-->
-<!--                                    </t>-->
-<!--                                </th>-->
-<!--                            </tr>-->
-<!--                            <tr>-->
-<!--                                <td style="border-right:solid 1px; border-bottom:solid 1px;">-->
-<!--                                    <div>GROWER/PRODUCTOR</div>-->
-<!--                                    <div>-->
-<!--                                        <span t-field="serial.producer_id"/>-->
-<!--                                    </div>-->
-<!--                                    <div>CSG:-->
-<!--                                        <span t-field="serial.producer_id.sag_code"/>-->
-<!--                                    </div>-->
-<!--                                    <div>PROVINCE/PROVINCIA:-->
-<!--                                        <span t-field="serial.producer_id.state_id_address"/>-->
-<!--                                    </div>-->
-<!--                                    <div>TOWNSHIP/COMUNA:-->
-<!--                                        <span t-field="serial.producer_id.city_address"/>-->
-<!--                                    </div>-->
-<!--                                    <div>REGION-->
-<!--                                        <span t-field="serial.producer_id.region_address_id_address"/>-->
-<!--                                    </div>-->
-<!--                                </td>-->
-<!--                                <td style="border-bottom:solid 1px;">-->
-<!--                                    <div>PACKED BY/EMBALADO POR</div>-->
-<!--                                    <div>-->
-<!--                                        <span t-esc="res_company.name"/>-->
-<!--                                    </div>-->
-<!--                                    <div>CSP:-->
-<!--                                        <span t-esc="res_company.sag_code"/>-->
-<!--                                    </div>-->
-<!--                                    <div>-->
-<!--                                        PROVINCE/PROVINCIA:-->
-<!--                                        <span t-field="res_company.state_id"/>-->
-<!--                                    </div>-->
-<!--                                    <div>TOWNSHIP/COMUNA:-->
-<!--                                        <span t-field="res_company.city"/>-->
-<!--                                    </div>-->
-<!--                                    <div>REGIÓN:-->
-<!--                                        <span t-field="res_company.region_address_id"/>-->
-<!--                                    </div>-->
-<!--                                </td>-->
-<!--                            </tr>-->
-<!--                            <tr>-->
-<!--                                <td colspan="2">-->
-<!--                                    <div>-->
-<!--                                        VARIETY (VARIEDAD):-->
-<!--                                        <span t-esc="serial.product_id.get_variety()"/>-->
-<!--                                    </div>-->
-<!--                                    <div>-->
-<!--                                        CROP (AÑO DE COSECHA):-->
-<!--                                        <span t-field="serial.harvest"/>-->
-<!--                                    </div>-->
-<!--                                    <div>-->
-<!--                                        PACKAGING DATE (FECHA DE ENVASADO):-->
-<!--                                        <span t-field="serial.packaging_date"/>-->
-<!--                                    </div>-->
-<!--                                    <div>BEST BEFORE DATE (CONSUMIR PREFERENTEMENTE ANTES DE):-->
-<!--                                        <span t-field="serial.best_before_date"/>-->
-<!--                                    </div>-->
-<!--                                    <div>-->
-<!--                                        TRACE CODE (CÓDIGO DE TRAZABILIDAD):-->
-<!--                                        <t t-if="serial.production_id.stock_picking_id">-->
-<!--                                            <span t-field="serial.production_id.stock_picking_id.sale_id"/>-->
-<!--                                        </t>-->
-<!--                                        <t t-elif="serial.production_id">-->
-<!--                                            <span t-field="serial.production_id"/>-->
-<!--                                        </t>-->
-<!--                                        <t t-else="">-->
-<!--                                            <span t-field="serial.lot_id"/>-->
-<!--                                        </t>-->
-<!--                                    </div>-->
-<!--                                    <div>-->
-<!--                                        NET WEIGHT (PESO NETO):-->
-<!--                                        <span t-esc="round(serial.net_weight,1)"/>-->
-<!--                                        kgs.-->
-<!--                                    </div>-->
-<!--                                    <div>GROSS WEIGHT (PESO BRUTO)-->
-<!--                                        <span t-esc="round(serial.gross_weight,1)"/>-->
-<!--                                        kgs.-->
-<!--                                    </div>-->
-<!--                                    <div>-->
-<!--                                        EXPORTED BY (EXPORTADO POR):-->
-<!--                                        <span t-esc="res_company.name"/>-->
-<!--                                    </div>-->
-<!--                                    <div style="text-align:center;">-->
-<!--                                        <img-->
-<!--                                                t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (serial.get_full_url(), 'Code128',serial.name,550, 45)"-->
-<!--                                        />-->
-<!--                                        <span t-field="serial.name"/>-->
-<!--                                    </div>-->
-<!--                                </td>-->
-<!--                            </tr>-->
-<!--                        </table>-->
-<!--                    <p style="page-break-after:avoid;"/>-->
-<!--                    <t t-set="counter" t-value="counter+1"/>-->
-<!--                </t>-->
-<!--            </div>-->
-<!--        </t>-->
-<!--    </template>-->
+    <template id="report_custom_temporary_serial">
+        <t t-call="web.html_container">
+            <div class="page">
+                <t t-foreach="docs" t-as="serial">
+                    <div style="text-align:right;font-size:8px;">
+                        <t t-if="'Con' in serial.product_id.get_species()">
+                            <strong>CONTAINS INSHELL WALNUT - CONTIENE NUEZ CON CÁSCARA</strong>
+                        </t>
+                        <t t-elif="'Sin' in serial.product_id.get_species()">
+                            <strong>CONTAINS SHELLED WALNUT - CONTIENE NUEZ SIN CÁSCARA</strong>
+                        </t>
+                        <t t-else="">
+                            <strong>CONTAINS WALNUT - CONTIENE NUEZ</strong>
+                        </t>
+                    </div>
+                    <table style="font-size:14px;">
+                        <tr>
+                            <th style="border-top:1px solid;border-bottom:1px solid" colspan="2">
+                                <t t-if="serial.product_id.label_name">
+                                    <span t-field="serial.product_id.label_name"/>
+                                </t>
+                                <t t-else="">
+                                    <span t-field="serial.product_id.display_name"/>
+                                </t>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="border-right:solid 1px; border-bottom:solid 1px;">
+                                <div>GROWER/PRODUCTOR</div>
+                                <div>
+                                    <span t-field="serial.producer_id"/>
+                                </div>
+                                <div>CSG:
+                                    <span t-field="serial.producer_id.sag_code"/>
+                                </div>
+                                <div>PROVINCE/PROVINCIA:
+                                    <span t-field="serial.producer_id.state_id_address"/>
+                                </div>
+                                <div>TOWNSHIP/COMUNA:
+                                    <span t-field="serial.producer_id.city_address"/>
+                                </div>
+                                <div>REGION
+                                    <span t-field="serial.producer_id.region_address_id_address"/>
+                                </div>
+                            </td>
+                            <td style="border-bottom:solid 1px;">
+                                <div>PACKED BY/EMBALADO POR</div>
+                                <div>
+                                    <span t-esc="res_company.name"/>
+                                </div>
+                                <div>CSP:
+                                    <span t-esc="res_company.sag_code"/>
+                                </div>
+                                <div>
+                                    PROVINCE/PROVINCIA:
+                                    <span t-field="res_company.state_id"/>
+                                </div>
+                                <div>TOWNSHIP/COMUNA:
+                                    <span t-field="res_company.city"/>
+                                </div>
+                                <div>REGIÓN:
+                                    <span t-field="res_company.region_address_id"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div>
+                                    VARIETY (VARIEDAD):
+                                    <span t-esc="serial.product_id.get_variety()"/>
+                                </div>
+                                <div>
+                                    CROP (AÑO DE COSECHA):
+                                    <span t-field="serial.harvest"/>
+                                </div>
+                                <div>
+                                    PACKAGING DATE (FECHA DE ENVASADO):
+                                    <span t-field="serial.packaging_date"/>
+                                </div>
+                                <div>BEST BEFORE DATE (CONSUMIR PREFERENTEMENTE ANTES DE):
+                                    <span t-field="serial.best_before_date"/>
+                                </div>
+                                <div>
+                                    TRACE CODE (CÓDIGO DE TRAZABILIDAD):
+                                    <t t-if="serial.production_id.stock_picking_id">
+                                        <span t-field="serial.production_id.stock_picking_id.sale_id"/>
+                                    </t>
+                                    <t t-elif="serial.production_id">
+                                        <span t-field="serial.production_id"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="serial.lot_id"/>
+                                    </t>
+                                </div>
+                                <div>
+                                    NET WEIGHT (PESO NETO):
+                                    <span t-esc="round(serial.net_weight,1)"/>
+                                    kgs.
+                                </div>
+                                <div>GROSS WEIGHT (PESO BRUTO)
+                                    <span t-esc="round(serial.gross_weight,1)"/>
+                                    kgs.
+                                </div>
+                                <div>
+                                    EXPORTED BY (EXPORTADO POR):
+                                    <span t-esc="res_company.name"/>
+                                </div>
+                                <div style="text-align:center;">
+                                    <img
+                                            t-att-src="'%s/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % (serial.get_full_url(), 'Code128',serial.name,550, 45)"
+                                    />
+                                    <span t-field="serial.name"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <t t-if="serial.id != docs[-1].id">
+                        <div style="page-break-after: always;"/>
+                    </t>
+                    <t t-else="">
+                        <div style="page-break-after:avoid;"/>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
     <record id="paper_format_10_x_7"
             model="report.paperformat"
     >
@@ -644,11 +647,11 @@
             name="dimabe_manufacturing.report_stock_production_lot_serial_label_all_out"
             paperformat="paper_format_10_x_7"
     />
-<!--    <report id="action_print_temporary_serial"-->
-<!--            string="Etiquetas para Salida de Proceso"-->
-<!--            model="custom.temporary.serial"-->
-<!--            report_type="qweb-pdf"-->
-<!--            name="dimabe_manufacturing.report_custom_temporary_serial"-->
-<!--            paperformat="paper_format_10_x_7"-->
-<!--    />-->
+    <report id="action_print_temporary_serial"
+            string="Etiquetas para Salida de Proceso"
+            model="custom.temporary.serial"
+            report_type="qweb-pdf"
+            name="dimabe_manufacturing.report_custom_temporary_serial"
+            paperformat="paper_format_10_x_7"
+    />
 </odoo>
