@@ -4,6 +4,7 @@ import base64
 
 class GenerateLabelWizard(models.TransientModel):
     _name = 'generate.label.wizard'
+    _description = "Generar Plantilla de Etiqueta"
 
     eco_id = fields.Many2one('mrp.eco')
 
@@ -16,23 +17,23 @@ class GenerateLabelWizard(models.TransientModel):
     type_of_best_before = fields.Selection(selection=[('mask', 'Escrita'), ('real', 'Real')], default='mask',
                                            string="Mostrar la fecha de Consumir Preferentemente antes de")
 
-    best_before_date_mask = fields.Char(string="Consumir Preferentemente antes de")
+    best_before_date_mask = fields.Char(string="Consumir Preferentemente antes de (Plantilla)")
 
     best_before_date = fields.Date(string='Consumir Preferentemente antes de')
 
     type_of_packaging = fields.Selection(selection=[('mask', 'Escrita'), ('real', 'Real')], default='mask',
                                          string="Mostrar la fecha de envasado")
 
-    packaging_date_mask = fields.Char(string='Fecha de Envasado')
+    packaging_date_mask = fields.Char(string='Fecha de Envasado (Plantilla)')
 
     packaging_date = fields.Date(string='Fecha de Envasado')
 
     type_of_trace_code = fields.Selection(selection=[('mask', 'Escrita'), ('real', 'Real')], default='mask',
                                           string="Mostrar codigo de trazabilidad")
 
-    sale_order_id = fields.Many2one('sale.order', string='Codigo de Trazabilidad')
+    sale_order_id = fields.Many2one('sale.order', string='Codigo de Trazabilidad (Real)')
 
-    trace_code = fields.Char(string='Codigo de Trazabilidad')
+    trace_code = fields.Char(string='Codigo de Trazabilidad (Escrita)')
 
     serial_number = fields.Char(string='Serie')
 

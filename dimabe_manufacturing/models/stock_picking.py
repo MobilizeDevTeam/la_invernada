@@ -23,6 +23,7 @@ class StockPicking(models.Model):
     product_id = fields.Many2one(related="move_ids_without_package.product_id")
 
     quantity_requested = fields.Float(
+        string="Demanda Inicial",
         related='move_ids_without_package.product_uom_qty',
         digits=dp.get_precision('Product Unit of Measure')
     )
@@ -69,14 +70,14 @@ class StockPicking(models.Model):
 
     dispatch_line_ids = fields.One2many('custom.dispatch.line', 'dispatch_real_id', copy=False)
 
-    name_orders = fields.Char('Pedidos', compute='get_name_orders')
+    name_orders = fields.Char('Nombre de Pedidos', compute='get_name_orders')
 
     dispatch_id = fields.Many2one('stock.picking', 'Despachos', domain=[('state', '!=', 'done')],
                                   copy=False)
 
     real_net_weigth = fields.Float('Kilos Netos Reales', compute='compute_net_weigth_real')
 
-    packing_list_file = fields.Binary('Packing List')
+    packing_list_file = fields.Binary('Packing List (Archivo)')
 
     is_multiple_dispatch = fields.Boolean('Es Despacho Multiple?', copy=False)
 
@@ -333,7 +334,7 @@ class StockPicking(models.Model):
             mp_move = stock_picking.get_mp_move()
             if stock_picking.picking_type_id.require_dried:
                 for move_line in mp_move.move_line_ids:
-                    move_line.lot_id.unpelled_state = 'waiting'
+                    move_line.lot_id.unpelled_state = 'draft'
             mp_move.move_line_ids.mapped('lot_id').write({
                 'stock_picking_id': stock_picking.id
             })

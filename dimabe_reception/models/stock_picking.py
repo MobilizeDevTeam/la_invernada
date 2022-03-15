@@ -20,7 +20,7 @@ class StockPicking(models.Model):
     )
 
     gross_weight = fields.Float(
-        'Kilos Brutos',
+        'Kilos Brutos (Recepcion)',
         digits=dp.get_precision('Product Unit of Measure')
     )
 
@@ -76,7 +76,7 @@ class StockPicking(models.Model):
         store=True
     )
 
-    # carrier_id = fields.Many2one('custom.carrier', 'Conductor')
+    #carrier_id = fields.Many2one('custom.carrier', 'Conductor')
 
     truck_in_date = fields.Datetime(
         'Entrada de Camión',
@@ -110,12 +110,12 @@ class StockPicking(models.Model):
     )
 
     carrier_truck_patent = fields.Char(
-        'Patente Camión',
+        'Patente Camión (Texto)',
         # related='truck_id.name'
     )
 
     carrier_cart_patent = fields.Char(
-        'Patente Carro',
+        'Patente Carro (Texto)',
         # related='cart_id.name'
     )
 
@@ -431,10 +431,11 @@ class StockPicking(models.Model):
                     m_move = self.get_pt_move()
                 if not m_move:
                     m_move = self.get_product_move()
-                if m_move:
-                    m_move.product_id.update_kg(product_id=m_move.product_id.id)
-                    m_move.product_id.get_and_update(product_id=m_move.product_id.id)
-
+                if m_move and self.picking_type_id.require_dried:
+                    lot = self.env['stock.move.line'].search([('move_id.id','=',m_move.id)],limit=1)
+                    lot.lot_id.write({
+                        'available_kg': lot.qty_done
+                    })
             return res
         # Se usaran datos de modulo de dimabe_manufacturing
         if self.picking_type_code == 'outgoing':

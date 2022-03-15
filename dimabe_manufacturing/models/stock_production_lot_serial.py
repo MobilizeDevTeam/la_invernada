@@ -52,7 +52,7 @@ class StockProductionLotSerial(models.Model):
     stock_product_id = fields.Many2one(
         'product.product',
         related='stock_production_lot_id.product_id',
-        string='Producto'
+        string='Producto del Lote'
     )
 
     reserved_to_stock_picking_id = fields.Many2one(
@@ -171,7 +171,7 @@ class StockProductionLotSerial(models.Model):
 
     to_unlink = fields.Boolean('Para Eliminar')
 
-    best_before_date_new = fields.Date(string='Consumir antes de')
+    best_before_date_new = fields.Date(string='Consumir antes de (Nueva)')
 
     to_print = fields.Boolean(string='Imprimir')
 
@@ -327,86 +327,85 @@ class StockProductionLotSerial(models.Model):
             months = item.label_durability_id.month_qty
             item.best_before_date = item.packaging_date + relativedelta(months=months)
 
+
     @api.model
     def create(self, values_list):
-        if 'stock_production_lot_id' in values_list.keys():
-            lot = self.env['stock.production.lot'].search([('id', '=', values_list['stock_production_lot_id'])])
-            values_list['product_id'] = lot.product_id.id
-        if ('stock_production_lot_id', 'producer_id') in values_list.keys():
-            lot = self.env['stock.production.lot'].search([('id', '=', values_list['stock_production_lot_id'])])
-            if not lot.producer_id:
-                lot.write({
-                    'producer_id': values_list['producer_id']
-                })
-            workorder = self.env['mrp.workorder'].search([('production_id.id', '=', values_list['production_id'])])
-            if not lot.label_durability_id:
-                lot.write({
-                    'label_durability_id': workorder.label_durability_id.id
-                })
-                values_list['label_durability_id'] = workorder.production_id.label_durability_id.id
-            workorder.write({
-                'out_weight': sum(lot.stock_production_lot_serial_ids.mapped('display_weight'))
-            })
-        res = super(StockProductionLotSerial, self).create(values_list)
-        if res.display_weight == 0 and res.gross_weight == 0:
-            raise models.ValidationError('debe agregar un peso a la serie')
-
-        stock_move_line = self.env['stock.move.line'].search([
-            ('lot_id', '=', res.stock_production_lot_id.id),
-            ('lot_id.is_prd_lot', '=', True)
-        ])
-        if res.stock_production_lot_id.best_before_date:
-            res.best_before_date_new = res.stock_production_lot_id.best_before_date
-        if res.stock_production_lot_id.packaging_date:
-            res.packaging_date = res.stock_production_lot_id.packaging_date
-        production = None
-        if stock_move_line.mapped('move_id.production_id'):
-            production = stock_move_line.mapped('move_id.production_id')[0]
-            res.producer_id = res.stock_production_lot_id.producer_id.id
-        else:
-            work_order = self.env['mrp.workorder'].search([
-                ('final_lot_id', '!=', False),
-                ('final_lot_id', '=', res.stock_production_lot_id.id)
-            ])
-            work_order.sudo().write({
-                'out_weight': sum(
-                        work_order.summary_out_serial_ids.mapped('display_weight')),
-                    'pt_out_weight': sum(work_order.summary_out_serial_ids.filtered(
-                        lambda a: a.product_id.categ_id.parent_id.name == 'Producto Terminado').mapped(
-                        'display_weight'))
-            })
-            if not work_order.start_date:
-                work_order.sudo().write({
-                    'start_date': fields.Datetime.now()
-                })
-            res.producer_id = res.stock_production_lot_id.producer_id.id
-
-            if work_order.production_id:
-                production = work_order.production_id[0]
-
-        if production:
-            res.production_id = production.id
-            res.reserve_to_stock_picking_id = production.stock_picking_id.id
-            res.stock_production_lot_id.update_kg(res.stock_production_lot_id.id)
-            res.stock_production_lot_id.write({
-                'label_durability_id':production.label_durability_id.id
-            })
-            res.stock_production_lot_id.get_and_update(res.product_id.id)
-            res.stock_production_lot_id.update_kg(res.stock_production_lot_id.product_id.id)
-        res.label_durability_id = res.stock_production_lot_id.label_durability_id
-
-        if res.bom_id:
-            if res.bom_id.product_id != res.product_id:
-                res.gross_weight = res.display_weight
-                return res
-            res.set_bom_canning()
-            if res.canning_id:
-                res.gross_weight = res.display_weight + res.canning_id.weight
-            else:
-                res.gross_weight = res.display_weight + sum(res.get_possible_canning_id().mapped('weight'))
         if 'is_pallet' not in self.env.context.keys():
-            # res.stock_production_lot_id.get_and_update(res.product_id.id)
-            res.stock_production_lot_id.update_kg(res.stock_production_lot_id.product_id.id)
+            if 'stock_production_lot_id' in values_list.keys():
+                lot = self.env['stock.production.lot'].search([('id', '=', values_list['stock_production_lot_id'])])
+                values_list['product_id'] = lot.product_id.id
+            if ('stock_production_lot_id', 'producer_id') in values_list.keys():
+                lot = self.env['stock.production.lot'].search([('id', '=', values_list['stock_production_lot_id'])])
+                if not lot.producer_id:
+                    lot.write({
+                        'producer_id': values_list['producer_id']
+                    })
+                workorder = self.env['mrp.workorder'].search([('production_id.id', '=', values_list['production_id'])])
+                if not lot.label_durability_id:
+                    lot.write({
+                        'label_durability_id': workorder.label_durability_id.id
+                    })
+                    values_list['label_durability_id'] = workorder.production_id.label_durability_id.id
+                workorder.write({
+                    'out_weight': sum(lot.stock_production_lot_serial_ids.mapped('display_weight'))
+                })
+            res = super(StockProductionLotSerial, self).create(values_list)
+            if res.display_weight == 0 and res.gross_weight == 0:
+                raise models.ValidationError('debe agregar un peso a la serie')
+    
+            stock_move_line = self.env['stock.move.line'].search([
+                ('lot_id', '=', res.stock_production_lot_id.id),
+                ('lot_id.is_prd_lot', '=', True)
+            ])
+            if res.stock_production_lot_id.best_before_date:
+                res.best_before_date_new = res.stock_production_lot_id.best_before_date
+            if res.stock_production_lot_id.packaging_date:
+                res.packaging_date = res.stock_production_lot_id.packaging_date
+            production = None
+            if stock_move_line.mapped('move_id.production_id'):
+                production = stock_move_line.mapped('move_id.production_id')[0]
+                res.producer_id = res.stock_production_lot_id.producer_id.id
+            else:
+                work_order = self.env['mrp.workorder'].search([
+                    ('final_lot_id', '!=', False),
+                    ('final_lot_id', '=', res.stock_production_lot_id.id)
+                ])
+                work_order.sudo().write({
+                    'out_weight': sum(
+                            work_order.summary_out_serial_ids.mapped('display_weight')),
+                        'pt_out_weight': sum(work_order.summary_out_serial_ids.filtered(
+                            lambda a: a.product_id.categ_id.parent_id.name == 'Producto Terminado').mapped(
+                            'display_weight'))
+                })
+                res.producer_id = res.stock_production_lot_id.producer_id.id
+    
+                if work_order.production_id:
+                    production = work_order.production_id[0]
+    
+            if production:
+                res.production_id = production.id
+                res.reserve_to_stock_picking_id = production.stock_picking_id.id
+                res.stock_production_lot_id.update_kg(res.stock_production_lot_id.id)
+                res.stock_production_lot_id.write({
+                    'label_durability_id': production.label_durability_id.id
+                })
+                res.stock_production_lot_id.get_and_update(res.product_id.id)
+                res.stock_production_lot_id.update_kg(res.stock_production_lot_id.product_id.id)
+            res.label_durability_id = res.stock_production_lot_id.label_durability_id
+    
+            if res.bom_id:
+                if res.bom_id.product_id != res.product_id:
+                    res.gross_weight = res.display_weight
+                    return res
+                res.set_bom_canning()
+                if res.canning_id:
+                    res.gross_weight = res.display_weight + res.canning_id.weight
+                else:
+                    res.gross_weight = res.display_weight + sum(res.get_possible_canning_id().mapped('weight'))
+                res.stock_production_lot_id.get_and_update(res.product_id.id)
+                res.stock_production_lot_id.update_kg(res.stock_production_lot_id.product_id.id)
+        else:
+            res = super(StockProductionLotSerial, self).create(values_list)
         return res
 
     @api.model

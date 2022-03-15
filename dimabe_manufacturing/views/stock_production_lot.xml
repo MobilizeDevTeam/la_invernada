@@ -4,133 +4,151 @@
         <field name="model">stock.production.lot</field>
         <field name="inherit_id" ref="stock.view_production_lot_form_simple"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="attributes">
-                <attribute name="attrs">{'readonly': [('is_prd_lot', '=', True)]}</attribute>
-            </xpath>
             <xpath expr="//sheet" position="before">
                 <header>
                     <button type="object" string="Cambiar Fecha de Envasado" name="change_date_packing"/>
                     <button type="object" string="Cambiar Fecha de Consumir Preferentemente antes de"
                             name="change_date_best"/>
+                    <field name="is_finished" invisible="1"/>
                 </header>
             </xpath>
-            <group name="main_group" position="inside">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <group name="main_group" position="replace">
+                <group style="width:100% !important;">
+                    <field name="product_id" readonly="1"/>
+                    <field name="producer_ids" invisible="1"/>
+                    <field name="producer_id" required="1"
+                           options="{'no_create': True, 'no_create_edit': True, 'no_quick_create': True}"
+                           domain="['|',('id','in',producer_ids),('always_to_print','=',True)]"
+                    />
+                    <field name="is_prd_lot" invisible="1"/>
+                    <field name="is_standard_weight" invisible="1"/>
+                    <field name="standard_weight" attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                    <field name="qty_serial_without_lot" attrs="{'invisible': [('is_standard_weight', '=',False)]}"/>
+                </group>
+                <br/>
+                <group attrs="{'invisible': [('is_finished','=',True)]}">
+                    <div style="width:50% !important;">
+                        <button type="object" string="Generar Series" name="generate_temporary_serial"
+                                attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                        <button type="object" string="Imprimir Todo" name="print_all_temporary_serial"
+                                attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                        <field name="do_print_selection_serial" invisible="1"/>
+                        <button type="object" string="Imprimir Seleccion"
+                                attrs="{'invisible': [('do_print_selection_serial','=',False)]}"
+                                name="print_selection_serial"/>
+                    </div>
+                </group>
+                <group>
+                    <field name="temporary_serial_ids" widget="one2many_selectable"
+                           attrs="{'invisible': [('is_standard_weight','=',False)]}"
+                           readonly="1">
+                        <tree limit="100" decoration-danger="printed == True" editable="bottom">
+                            <field name="product_id"/>
+                            <field name="producer_id"/>
+                            <field name="name"/>
+                            <field name="printed" invisible="1"/>
+                            <field name="gross_weight"/>
+                            <field name="net_weight"/>
+                            <button type="object" name="do_print" string="Imprimir"/>
+                            <button type="object" name="unlink" string="Eliminar"
+                                    groups="dimabe_manufacturing.oven_manager"/>
+                        </tree>
+                    </field>
 
-                <field name="is_prd_lot" invisible="1"/>
-                <field name="is_standard_weight" invisible="1" readonly="1"/>
-                <field name="standard_weight"
-                       attrs="{'invisible':['|',('is_standard_weight','=',False)]}"
-                       readonly="1"
-                />
-                <button name="check_duplicate" type="object" string="verificar series duplicadas"
-                        groups="base.group_no_one"/>
-                <field name="producer_ids" invisible="1"/>
-                <field name="producer_id" required="1"
-                       options="{'no_create': True, 'no_create_edit':True,'no_quick_create':True}"
-                       domain="['|',('id','in',producer_ids),('always_to_print','=',True)]"/>
-                <field name="qty_standard_serial"
-                       attrs="{'invisible':['|',('is_standard_weight','=',False),('can_add_serial','=',False)]}"
-                />
-                <button string="Generar Pallet" class="oe_highlight"
-                        attrs="{'invisible':['|',('is_standard_weight','=',False),('can_add_serial','=',False)]}"
-                        type="object"
-                        name="generate_standard_pallet"
-                />
-                <field name="can_add_serial"
-                       groups="base.group_system"
-                />
-                <button string="Debug" type="object" name="check_all_existence" groups="base.group_no_one"/>
-                <field name="is_prd_lot"
-                       groups="base.group_system"
-                />
-                <field name="is_dried_lot"
-                       groups="base.group_system"
-                />
-
-                <field name="label_durability_id"
-                       groups="base.group_system"
-                />
-
-                <field name="stock_picking_id"
-                       groups="base.group_system"
-                />
-                <field name="packaging_date"/>
-                <field name="change_packaging" invisible="1"/>
-                <button type="object" name="do_change_date_packing" string="Cambiar Fecha"
-                        attrs="{'invisible':[('change_packaging','=',False)]}"/>
-                <field name="best_before_date" />
-                <field name="change_best" invisible="1"/>
-                <button type="object" name="do_change_date_best" string="Cambiar Fecha"
-                        attrs="{'invisible':[('change_best','=',False)]}"/>
-                <!--                <button name="print_all_serial" attrs="{'invisible':[('is_standard_weight','=',False)]}"-->
-                <!--                        string="Imprimir Series" type="object"/>-->
-                <field name="stock_production_lot_serial_ids"
-                       attrs="{'readonly':[('can_add_serial','=',False)],'invisible':[('is_standard_weight', '=', True)]}"
-                >
-                    <tree editable="bottom">
-                        <field name="stock_production_lot_id" readonly="1"/>
-                        <field name="belongs_to_prd_lot" invisible="1"/>
-                        <field name="producer_id" readonly="1"/>
-                        <field name="consumed" readonly="1"/>
-                        <field name="display_weight"
-                               attrs="{'readonly':['|',('belongs_to_prd_lot', '=', False),('consumed','=',True)]}"
-                               onclick="custom_script.js"
-                        />
-                        <field name="serial_number" readonly="1"/>
-                        <field name="production_id"
-                               readonly="1"
-                               widget="many2onebutton"
-                        />
-
-                        <field name="belongs_to_prd_lot"/>
-                        <button name="print_serial_label"
-                                type="object" string="Imprimir"
-                                attrs="{'invisible':['|',('serial_number', '=', False), ('belongs_to_prd_lot', '=', False)]}"
-                        />
-                    </tree>
-                </field>
-
-                <field name="all_pallet_ids"
-                       attrs="{'invisible':[('is_standard_weight','=',False)]}"
-                >
-                    <tree editable="bottom" create="false" delete="false">
-                        <field name="name" readonly="1"/>
-                        <field name="total_content_weight"/>
-                        <field name="total_content"/>
-                        <field name="state" readonly="1"/>
-                        <button type="object" string="Eliminar" groups="dimabe_manufacturing.group_mrp_modify_serials"
-                                name="delete_pallet"/>
-                    </tree>
-                </field>
-                <button type="object" name="delete_all_serial" string="Eliminar Todo"
-                        groups="dimabe_manufacturing.group_mrp_modify_serials"/>
-                <button type="object" name="unlink_selecction" string="Eliminar Seleccion"
-                        groups="dimabe_manufacturing.group_mrp_modify_serials"/>
-                <field name="serial_without_pallet_ids"
-                       attrs="{'invisible':[('is_standard_weight','=',False)]}"
-                >
-                    <tree delete="false" editable="bottom" create="false">
-                        <field name="to_unlink" string="Eliminar"/>
-                        <field name="stock_production_lot_id"/>
-                        <field name="belongs_to_prd_lot" invisible="1"/>
-                        <field name="producer_id"/>
-                        <field name="consumed"/>
-                        <field name="display_weight"
-
-                        />
-                        <field name="serial_number"/>
-                        <field name="production_id"
-
-                               widget="many2onebutton"
-                        />
-                        <field name="belongs_to_prd_lot"/>
-                        <button name="print_serial_label"
-                                type="object" string="Imprimir"
-                                attrs="{'invisible':['|',('serial_number', '=', False), ('belongs_to_prd_lot', '=', False)]}"
-                        />
-                        <button type="object" name="delete" string="Eliminar"/>
-                    </tree>
-                </field>
+                </group>
+                <separator style="border-bottom: 4px solid;width:100%%;"
+                           attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                <group attrs="{'invisible': [('is_finished','=',True)]}">
+                    <field name="qty_standard_serial" attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                    <button type="object" name="generate_new_pallet" context="{'is_pallet': True}"
+                            string="Generar Pallet" class="oe_highlight"
+                            attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                </group>
+                <group>
+                    <field name="can_add_serial"/>
+                    <field name="is_prd_lot" readonly="1"/>
+                    <field name="is_dried_lot" readonly="1"/>
+                    <field name="label_durability_id"/>
+                    <field name="stock_picking_id"/>
+                    <field name="packaging_date"/>
+                    <field name="change_packaging" invisible="1"/>
+                    <button type="object" name="do_change_date_packing"
+                            string="Cambiar Fecha"
+                            attrs="{'invisible':[('change_packaging','=',False)]}"/>
+                    <field name="change_best" invisible="1"/>
+                    <field name="best_before_date"/>
+                    <button type="object" name="do_change_date_best" string="Cambiar Fecha"
+                            attrs="{'invisible':[('change_best','=',False)]}"/>
+                </group>
+                <group>
+                    <div style="width:50% !important;">
+                        <button type="object" name="delete_all_serial" string="Eliminar Todo"
+                                attrs="{'invisible': [('is_standard_weight','!=',True)]}" groups="dimabe_manufacturing.oven_manager"/>
+                        <button type="object" name="unlink_selection" string="Eliminar Seleccion" groups="dimabe_manufacturing.oven_manager" attrs="{'invisible': [('is_standard_weight','!=',True)]}"/>
+                    </div>
+                </group>
+                <group>
+                    <field name="stock_production_lot_serial_ids"
+                           attrs="{'readonly': [('can_add_serial','=',False)],'invisible': [('is_standard_weight','=',True)]}">
+                        <tree editable="bottom">
+                            <field name="stock_production_lot_id" readonly="1"/>
+                            <field name="belongs_to_prd_lot" readonly="1"/>
+                            <field name="producer_id" readonly="1"/>
+                            <field name="consumed" readonly="1"/>
+                            <field name="display_weight"
+                                   attrs="{'readonly':['|',('belongs_to_prd_lot', '=', False),('consumed','=',True)]}"
+                                   onclick="custom_script.js"
+                            />
+                            <field name="serial_number" readonly="1"/>
+                            <field name="production_id" readonly="1" widget="many2onebutton"/>
+                            <button type="object" string="Imprimir" name="print_serial_label"
+                                    attrs="{'invisible':[('serial_number','=',False),('belongs_to_prd_lot','=',False)]}"/>
+                        </tree>
+                    </field>
+                </group>
+                <group>
+                    <field name="all_pallet_ids" string="Pallets"
+                           attrs="{'invisible': [('is_standard_weight','=',False)]}" readonly="1">
+                        <tree>
+                            <field name="name" readonly="1"/>
+                            <field name="total_content_weight" readonly="1"/>
+                            <field name="total_content"/>
+                            <field name="state"/>
+                            <button type="object" name="delete_pallet" string="Eliminar"
+                                    groups="dimabe_manufacturing.oven_manager"/>
+                        </tree>
+                    </field>
+                </group>
+                <separator style="border-bottom: 4px solid;width:100%%;"
+                           attrs="{'invisible': [('is_standard_weight','=',False)]}"/>
+                <group>
+                    <field name="serial_without_pallet_ids" attrs="{'invisible': [('is_standard_weight','=',False)]}"
+                    >
+                        <tree delete="false" editable="bottom" create="false">
+                            <field name="to_unlink" string="Eliminar"/>
+                            <field name="stock_production_lot_id"/>
+                            <field name="belongs_to_prd_lot" invisible="1"/>
+                            <field name="producer_id"/>
+                            <field name="consumed"/>
+                            <field name="display_weight"
+                            />
+                            <field name="serial_number"/>
+                            <field name="production_id"
+                                   widget="many2onebutton"
+                            />
+                            <field name="belongs_to_prd_lot"/>
+                            <button name="print_serial_label"
+                                    type="object" string="Imprimir"
+                                    attrs="{'invisible':['|',('serial_number', '=', False), ('belongs_to_prd_lot', '=', False)]}"
+                            />
+                            <button type="object" name="delete" string="Eliminar"
+                                    groups="dimabe_manufacturing.oven_manager"/>
+                        </tree>
+                    </field>
+                </group>
             </group>
         </field>
     </record>
@@ -220,7 +238,7 @@
         <field name="name">Vista General Despelonado Entrada</field>
         <field name="res_model">stock.production.lot</field>
         <field name="view_mode">tree</field>
-        <field name="domain">[('unpelled_state', 'in', ['waiting', 'drying'])]</field>
+        <field name="domain">[('unpelled_state', 'in', ['draft','waiting', 'drying'])]</field>
         <field name="view_id" ref="stock_production_lot_in_dashboard_tree_view"/>
     </record>
     <menuitem name="Vista General Despelonado Entrada"

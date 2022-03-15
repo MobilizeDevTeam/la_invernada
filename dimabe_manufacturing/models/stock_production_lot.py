@@ -71,7 +71,7 @@ class StockProductionLot(models.Model):
         digits=dp.get_precision('Product Unit of Measure')
     )
 
-    qty_standard_serial = fields.Integer('Cantidad de Series')
+    qty_standard_serial = fields.Integer('Cantidad de Series por Pallet')
 
     stock_production_lot_serial_ids = fields.One2many(
         'stock.production.lot.serial',
@@ -264,9 +264,10 @@ class StockProductionLot(models.Model):
 
     unpelled_dried_id = fields.Many2one('unpelled.dried', 'Proceso de Secado')
 
-    qty_serial_without_lot = fields.Integer(string='Cantidad de Series sin Pallet')
+    qty_serial_without_lot = fields.Integer(string='Cantidad de Series Temporales')
 
-    # temporary_serial_ids = fields.One2many('custom.temporary.serial', 'lot_id', string='Series sin palletizar')
+    temporary_serial_ids = fields.One2many('custom.temporary.serial', 'lot_id',
+                                           string='Series temporales sin Paletizar')
 
     do_print_selection_serial = fields.Boolean('Imprimir Series Seleccionadas')
 
@@ -338,23 +339,39 @@ class StockProductionLot(models.Model):
             'tag': 'reload',
         }
 
+    @api.onchange('qty_serial_without_lot')
+    def onchange_qty_serial_without_lot(self):
+        for item in self:
+            if item.qty_serial_without_lot > 400:
+                raise models.UserError('No se pueden generar mas de 400 series al vez')
+
     @api.multi
     def generate_temporary_serial(self):
+        if self.qty_serial_without_lot > 400:
+            raise models.UserError('No se pueden generar mas de 400 series al vez')
         counter = self.get_last_serial() if len(self.temporary_serial_ids) > 0 and self.last_serial_number != '' else 1
+        serials = []
         for serial in range(self.qty_serial_without_lot):
             zeros = serial_utils.get_zeros(counter)
-            self.env['custom.temporary.serial'].create({
+            production_id = self.env['mrp.workorder'].search([('final_lot_id.id', '=', self.id)]).production_id
+            canning_id = self.get_possible_canning_id(production_id.id)[0]
+            gross_weight = self.standard_weight + canning_id.weight
+            serials.append({
                 'product_id': self.product_id.id,
                 'producer_id': self.producer_id.id,
                 'lot_id': self.id,
                 'name': f'{self.name}{zeros}{counter}',
                 'best_before_date': fields.Date.today() + relativedelta(
-                    months=self.label_durability_id.month_qty),
+                    months=self.label_durability_id.month_qty) if not self.best_before_date else self.best_before_date,
                 'harvest': fields.Date.today().year,
                 'label_durability_id': self.label_durability_id.id,
                 'net_weight': self.standard_weight,
+                'production_id': production_id.id,
+                'packaging_date': fields.Date.today() if not self.packaging_date else self.packaging_date,
+                'gross_weight': gross_weight
             })
             counter += 1
+        self.env['custom.temporary.serial'].create(serials)
         self.write({
             'last_serial_number': self.temporary_serial_ids[-1].name
         })
@@ -392,10 +409,14 @@ class StockProductionLot(models.Model):
             })
             temporary_ids = self.env['custom.temporary.serial'].search([('lot_id', '=', item.id)],
                                                                        limit=item.qty_standard_serial)
-            for temp in temporary_ids:
-                temp.create_serial(pallet_id.id)
+            temporary_ids.create_serial(pallet_id.id)
             pallet_id.write({
                 'state': 'close'
+            })
+            workorder = self.env['mrp.workorder'].sudo().search([('final_lot_id', '=', item.id)], limit=1)
+            workorder.write({
+                'out_weight': sum(serial.display_weight for serial in item.stock_production_lot_serial_ids),
+                'pt_out_weight': sum(serial.display_weight for serial in item.stock_production_lot_serial_ids)
             })
             self.update_kg(self.id)
 
@@ -419,6 +440,18 @@ class StockProductionLot(models.Model):
                 'res_id': wiz.id,
                 'context': self.env.context
             }
+
+    def get_possible_canning_id(self, production_id):
+        production_id = self.env['mrp.production'].search([('id', '=', production_id)])
+        return production_id.bom_id.bom_line_ids.filtered(
+            lambda a: 'envases' in str.lower(a.product_id.categ_id.name) or
+                      'embalaje' in str.lower(a.product_id.categ_id.name)
+                      or (
+                              a.product_id.categ_id.parent_id and (
+                              'envases' in str.lower(a.product_id.categ_id.parent_id.name) or
+                              'embalaje' in str.lower(a.product_id.categ_id.parent_id.name))
+                      )
+        ).mapped('product_id')
 
     def do_change_date_packing(self):
         for item in self:

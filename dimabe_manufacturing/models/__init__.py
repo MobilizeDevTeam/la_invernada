@@ -36,3 +36,4 @@ from . import generate_label_wizard
 from . import mrp_eco
 from . import change_date_lot
 from . import custom_collection_group
+from . import custom_temporary_serial

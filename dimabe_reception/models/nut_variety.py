@@ -7,6 +7,7 @@ def upper(name):
 
 class NutVariety(models.Model):
     _name = 'nut.variety'
+    _description = "Variedad de Nuez"
 
     _sql_constraints = [
         ('name_uniq', 'UNIQUE(name)', 'la variedad ya se encuentra en el sistema.')
