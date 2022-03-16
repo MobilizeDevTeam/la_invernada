@@ -1501,7 +1501,7 @@ a VAT."""))
             #            if self._es_boleta():
             #                lines['RUTMandante']
             lines["NmbItem"] = self._acortar_str(line.product_id.name, 80)  #
-            lines["DscItem"] = (self._acortar_str(line.name, 1000).product_id.default_code.encode('ascii', 'ignore')).decode("utf-8")
+            lines["DscItem"] = (self._acortar_str(line.name, 1000).encode('ascii', 'ignore')).decode("utf-8")
             if line.product_id.default_code:
                 lines["NmbItem"] = self._acortar_str(
                     line.product_id.name.replace("[" + line.product_id.default_code + "] ", ""), 80
