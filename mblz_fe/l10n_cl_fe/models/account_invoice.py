@@ -1146,6 +1146,7 @@ a VAT."""))
         return rel_invoices
 
     def _acortar_str(self, texto, size=1):
+        texto = texto.replace('&#8203;', '')
         texto = texto.replace('&', '/')
         c = 0
         cadena = ""
