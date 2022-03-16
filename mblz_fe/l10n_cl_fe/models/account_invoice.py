@@ -1485,8 +1485,8 @@ a VAT."""))
             lines["NroLinDet"] = line.sequence
             if line.product_id.default_code and not no_product:
                 lines["CdgItem"] = {}
-                lines["CdgItem"]["TpoCodigo"] = "INT1"
-                lines["CdgItem"]["VlrCodigo"] = line.product_id.default_code
+                lines["CdgItem"]["TpoCodigo"] = "INT1"  
+                lines["CdgItem"]["VlrCodigo"] = (line.product_id.default_code.encode('ascii', 'ignore')).decode("utf-8")
             details = line.get_tax_detail()
             lines["Impuesto"] = details['impuestos']
             MntExe += details['MntExe']
@@ -1501,7 +1501,7 @@ a VAT."""))
             #            if self._es_boleta():
             #                lines['RUTMandante']
             lines["NmbItem"] = self._acortar_str(line.product_id.name, 80)  #
-            lines["DscItem"] = self._acortar_str(line.name, 1000)  # descripción más extenza
+            lines["DscItem"] = (self._acortar_str(line.name, 1000).product_id.default_code.encode('ascii', 'ignore')).decode("utf-8")
             if line.product_id.default_code:
                 lines["NmbItem"] = self._acortar_str(
                     line.product_id.name.replace("[" + line.product_id.default_code + "] ", ""), 80
