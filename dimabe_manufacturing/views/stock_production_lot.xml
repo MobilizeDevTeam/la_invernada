@@ -93,7 +93,7 @@
                 <group>
                     <field name="stock_production_lot_serial_ids"
                            attrs="{'readonly': [('can_add_serial','=',False)],'invisible': [('is_standard_weight','=',True)]}">
-                        <tree editable="bottom">
+                        <tree editable="bottom" decoration-danger="printed == True">
                             <field name="stock_production_lot_id" readonly="1"/>
                             <field name="belongs_to_prd_lot" readonly="1"/>
                             <field name="producer_id" readonly="1"/>
@@ -102,6 +102,7 @@
                                    attrs="{'readonly':['|',('belongs_to_prd_lot', '=', False),('consumed','=',True)]}"
                                    onclick="custom_script.js"
                             />
+                            <field name="printed" invisible="1"/>
                             <field name="serial_number" readonly="1"/>
                             <field name="production_id" readonly="1" widget="many2onebutton"/>
                             <button type="object" string="Imprimir" name="print_serial_label"
@@ -139,6 +140,7 @@
                             <field name="production_id"
                                    widget="many2onebutton"
                             />
+                            <field name="printed" invisible="1"/>
                             <field name="belongs_to_prd_lot"/>
                             <button name="print_serial_label"
                                     type="object" string="Imprimir"

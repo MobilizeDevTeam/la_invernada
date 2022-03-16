@@ -373,7 +373,8 @@ class StockProductionLot(models.Model):
             counter += 1
         self.env['custom.temporary.serial'].create(serials)
         self.write({
-            'last_serial_number': self.temporary_serial_ids[-1].name
+            'last_serial_number': self.temporary_serial_ids[-1].name,
+            'qty_serial_without_lot': 0
         })
 
     @api.multi
