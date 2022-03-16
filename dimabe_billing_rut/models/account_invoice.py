@@ -624,10 +624,11 @@ class AccountInvoice(models.Model):
     def _onchange_invoice_line_ids(self):
         res = super(AccountInvoice, self)._onchange_invoice_line_ids()
         tax_line_ids = self.tax_line_ids
-        if tax_line_ids.tax_id.sii_type == 'R':
-            amount = tax_line_ids.amount
-            tax_line_ids.amount_retencion = amount
-            tax_line_ids.amount = 0
+        for tax_line in tax_line_ids:
+            if tax_line.tax_id.sii_type == 'R':
+                amount = tax_line.amount
+                tax_line.amount_retencion = amount
+                tax_line.amount = 0
         return res
       
     @api.multi
