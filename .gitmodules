@@ -14,3 +14,7 @@
 	path = mblz_la_invernada
 	url = git@github.com:MobilizeDevTeam/mblz_la_invernada.git
 	branch = 14.0
+[submodule "mblz_product_advanced_search"]
+	path = mblz_product_advanced_search
+	url = git@github.com:MobilizeDevTeam/mblz_product_advanced_search.git
+	branch = 12.0
