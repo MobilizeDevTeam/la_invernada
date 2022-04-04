@@ -18,3 +18,7 @@
 	path = mblz_product_advanced_search
 	url = git@github.com:MobilizeDevTeam/mblz_product_advanced_search.git
 	branch = 12.0
+[submodule "account_aged_mblz"]
+	path = account_aged_mblz
+	url = git@github.com:MobilizeDevTeam/account_aged_mblz.git
+	branch = 12.0
