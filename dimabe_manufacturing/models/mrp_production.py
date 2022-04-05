@@ -241,7 +241,7 @@ class MrpProduction(models.Model):
     def button_mark_done(self):
         self.calculate_done()
         final_lot_id = self.finished_move_line_ids.filtered(lambda x: x.product_id.id == self.product_id.id)
-        if len(final_lot_id.stock_production_lot_serial_ids) == 0:
+        if len(final_lot_id.lot_id.stock_production_lot_serial_ids) == 0:
             self.move_raw_ids.write({
                 'lot_id': self.finished_move_line_ids.filtered(lambda x: len(x.lot_id.stock_production_lot_serial_ids) > 0)[0].id
             })
