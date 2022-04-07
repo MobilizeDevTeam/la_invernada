@@ -35,24 +35,25 @@ class DryProcessController(http.Controller):
         result_receptions = request.env['stock.picking'].search([('state','=','done'), ('picking_type_id.require_dried', '=', True),('write_date', '>', search_date)]).filtered(lambda x: x.name not in result.mapped('in_lot_ids.name'))
 
         for reception in result_receptions:
-            product_id =  reception.move_line_ids_without_package.filtered(lambda x: x.lot_id)[0]
-            processResult.append({
-                    'name': '{} {}'.format(reception.partner_id.name,product_id.display_name),
-                    'inLotIds': [reception.name],
-                    'initDate': reception.date_done,
-                    'guideNumbers': reception.guide_number,
-                    'finishDate': reception.write_date,
-                    'productName': reception.product_id.name,
-                    'productId': reception.product_id.id,
-                    'productVariety': reception.product_id.get_variety(),
-                    'outLot': '',
-                    'producerName': reception.partner_id.name,
-                    'producerId': reception.partner_id.id,
-                    'totalInWeight': reception.net_weight,
-                    'totalOutWeight': 0,
-                    'performance': 0,
-                    'OdooUpdatedAt': reception.write_date
-                })
+            if len(reception.move_line_ids_without_package) > 0:
+                product_id = reception.move_line_ids_without_package.filtered(lambda x: x.lot_id)[0]
+                processResult.append({
+                        'name': '{} {}'.format(reception.partner_id.name,product_id.display_name),
+                        'inLotIds': [reception.name],
+                        'initDate': reception.date_done,
+                        'guideNumbers': reception.guide_number,
+                        'finishDate': reception.write_date,
+                        'productName': reception.product_id.name,
+                        'productId': reception.product_id.id,
+                        'productVariety': reception.product_id.get_variety(),
+                        'outLot': '',
+                        'producerName': reception.partner_id.name,
+                        'producerId': reception.partner_id.id,
+                        'totalInWeight': reception.net_weight,
+                        'totalOutWeight': 0,
+                        'performance': 0,
+                        'OdooUpdatedAt': reception.write_date
+                    })
 
 
 

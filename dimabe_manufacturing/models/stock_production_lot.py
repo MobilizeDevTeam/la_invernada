@@ -275,6 +275,20 @@ class StockProductionLot(models.Model):
 
     is_finished = fields.Boolean('Finalizado')
 
+    is_drying = fields.Boolean('Esta secando?', compute='compute_is_drying')
+
+    @api.multi
+    def compute_is_drying(self):
+        for item in self:
+            dried_unpelled_id = self.env['unpelled.dried'].sudo().search([('out_lot_id', '=', item.id)])
+            if dried_unpelled_id:
+                if dried_unpelled_id.state == 'progress':
+                    item.is_drying = True
+                else:
+                    item.is_drying = False
+            else:
+                item.is_drying = False
+
     @api.multi
     def compute_production(self):
         for item in self:
@@ -354,6 +368,8 @@ class StockProductionLot(models.Model):
         for serial in range(self.qty_serial_without_lot):
             zeros = serial_utils.get_zeros(counter)
             production_id = self.env['mrp.workorder'].search([('final_lot_id.id', '=', self.id)]).production_id
+            if not production_id:
+                production_id = self.env['stock.move.line'].sudo().search([('lot_id.id','=',self.id),('move_id.production_id','!=',False)]).move_id.production_id
             canning_id = self.get_possible_canning_id(production_id.id)[0]
             gross_weight = self.standard_weight + canning_id.weight
             serials.append({
