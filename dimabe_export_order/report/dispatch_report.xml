@@ -86,7 +86,7 @@
                                         <strong>F. EMISIÓN:</strong>
                                     </td>
                                     <td style="text-align:left;">
-                                        <span t-esc="d.create_date.date()"/>
+                                        <span t-esc="d.date_done.date()"/>
                                     </td>
                                 </tr>
                                 <tr>
