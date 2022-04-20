@@ -4,20 +4,6 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" postition="after">
-                <button type="object" string="Debug" group="base.group_no_one" name="test"/>
-                <button name="calculate_last_serial" type="object"
-                        string="Peso ultima serie"
-                        attrs="{'visible':[('state', '==', 'done')],'invisible':[('picking_type_code','=','outgoing')]}"
-                />
-                <button name="clean_reserved" type="object"
-                        string="Limpiar Reservas"
-                        attrs="{'visible':[('state','!=','done'),('picking_type_code','=','outgoing')]}"
-                />
-                <button type="object" string="Actualizar" name="update_stock_quant"/>
-                <button name="fix_dispatch" type="object" string="Fix Dispatch" groups="base.group_no_one"/>
-            </xpath>
-
             <button name="action_assign" position="replace"/>
             <button name="do_unreserve" position="replace"/>
             <xpath expr="//notebook[1]//page[1]" position="after">
