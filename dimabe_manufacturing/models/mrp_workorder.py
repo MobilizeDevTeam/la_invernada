@@ -433,17 +433,6 @@ class MrpWorkorder(models.Model):
         res.final_lot_id = final_lot.id
         return res
 
-    @api.multi
-    def write(self, vals):
-        for item in self:
-            if item.active_move_line_ids and \
-                    not item.active_move_line_ids.filtered(lambda a: a.is_raw):
-                for move_line in item.active_move_line_ids:
-                    move_line.update({
-                        'is_raw': True
-                    })
-        res = super(MrpWorkorder, self).write(vals)
-        return res
 
     def open_tablet_view(self):
         for check in self.check_ids:
@@ -486,6 +475,10 @@ class MrpWorkorder(models.Model):
                     })
                     if check.quality_state == 'none' and check.qty_done > 0:
                         self.action_next()
+                else:
+                    self.active_move_line_ids.filtered(lambda a: a.lot_id.id == check.lot_id.id).write({
+                        'is_raw': False
+                    })
         self.action_first_skipped_step()
         self.sudo().write({
             'in_weight': sum(self.potential_serial_planned_ids.mapped('display_weight'))
@@ -669,3 +662,4 @@ class MrpWorkorder(models.Model):
         quant.write({
             'quantity': sum(lot.stock_production_lot_serial_ids.mapped('real_weight'))
         })
+

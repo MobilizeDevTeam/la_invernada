@@ -17,10 +17,13 @@ class CustomNote(models.Model):
 
     @api.model
     def get_full_note(self):
-        destiny = dict(self._fields['destiny'].selection).get(self.destiny)
-        full_note = self.body.strip()
-        full_note = full_note.replace('{destino}', destiny)
-        full_note = full_note.upper()
+        if self.body:
+            destiny = dict(self._fields['destiny'].selection).get(self.destiny)
+            full_note = self.body.strip()
+            full_note = full_note.replace('{destino}', destiny) if full_note else ''
+            full_note = full_note.upper()
+        else:
+            full_note = ''
         return full_note
 
     @api.model
