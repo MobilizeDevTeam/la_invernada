@@ -508,7 +508,7 @@ class StockProductionLotSerial(models.Model):
     @api.multi
     def get_full_url(self):
         self.ensure_one()
-        base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
+        base_url = "https://dimabe-odoo-la-invernada.odoo.com"
         return base_url
 
     @api.multi
