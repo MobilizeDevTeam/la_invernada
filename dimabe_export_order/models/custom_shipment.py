@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class CustomShipment(models.Model):
     _name = 'custom.shipment'
+    _description = "Viaje"
 
     name = fields.Char(
         'Embarque',

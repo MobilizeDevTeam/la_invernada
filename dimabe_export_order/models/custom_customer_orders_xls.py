@@ -7,6 +7,7 @@ from odoo import fields, models, api
 
 class CustomCustomerOrdersXls(models.TransientModel):
     _name = 'custom.customer.orders.xls'
+    _description = "Generador de Archivo de Pedidos"
 
     orders_file = fields.Binary('Archivo de Pedidos')
 

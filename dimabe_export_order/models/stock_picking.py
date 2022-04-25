@@ -11,16 +11,16 @@ class StockPicking(models.Model):
 
     delivery_date = fields.Datetime('Fecha de entrega')
 
-    #shipping_number = fields.Integer('Número Embarque')
+    # shipping_number = fields.Integer('Número Embarque')
     shipping_number = fields.Char('Número Embarque')
 
-    #Ya no se ocupa
-    #shipping_id = fields.Many2one(
+    # Ya no se ocupa
+    # shipping_id = fields.Many2one(
     #    'custom.shipment',
     #    'Embarque'
-    #)
+    # )
 
-    #required_loading_date = fields.Datetime(
+    # required_loading_date = fields.Datetime(
     #    related='shipping_id.required_loading_date')
 
     variety = fields.Many2many(related="product_id.attribute_value_ids")
@@ -28,9 +28,10 @@ class StockPicking(models.Model):
     country = fields.Char(related='partner_id.country_id.name')
 
     quantity_done = fields.Float(
+        string="Cantidad Hecha",
         related='move_ids_without_package.product_uom_qty')
 
-    product = fields.Many2one(related="move_ids_without_package.product_id")
+    product = fields.Many2one('product.product', string="Producto ('Pedido')", related="move_ids_without_package.product_id")
 
     contract_correlative = fields.Integer('corr')
 
@@ -51,11 +52,12 @@ class StockPicking(models.Model):
 
     notify_ids = fields.Many2many(
         'res.partner',
+        string="Notificados",
         domain=[('customer', '=', True)]
     )
 
-    custom_notify_ids = fields.Many2many('custom.notify', string="Notify")
- 
+    custom_notify_ids = fields.Many2many('custom.notify', string="Notify (Custom)")
+
     agent_id = fields.Many2one(
         'res.partner',
         'Agente',
@@ -115,7 +117,7 @@ class StockPicking(models.Model):
     )
 
     gross_weight_dispatch = fields.Float(
-        string="Kilos Brutos",
+        string="Kilos Brutos (Despacho)",
         copy=False
     )
 
@@ -215,7 +217,7 @@ class StockPicking(models.Model):
     type_of_dispatch = fields.Selection(
         [('exp', 'Exportación'),
          ('nac', 'Nacional')],
-        string="Tipo de Despacho",
+        string="Tipo de Despacho (Custom)",
         copy=False)
 
     sell_shipping = fields.Char(
@@ -252,16 +254,100 @@ class StockPicking(models.Model):
     have_picture_report = fields.Boolean('Tiene reporte de fotos', default=True)
 
     arrival_weight = fields.Float('Peso de Entrada',
-        copy=False)
+                                  copy=False)
 
     departure_weight = fields.Float('Peso de Salida',
-        copy=False)
+                                    copy=False)
 
     customs_department = fields.Many2one('res.partner', 'Oficina Aduanera',
-        copy=False)
+                                         copy=False)
 
     canning_data = fields.Char('Agregar Envases',
-        copy=False)
+                               copy=False)
+
+    stacking = fields.Char(string="Stacking")
+
+    cut_off = fields.Char(string="Cut Off")
+
+    quality_status = fields.Selection([
+                    ('Pendiente','Pendiente'),
+                    ('Recibido','Recibido'),
+                    ('Enviado','Enviado'),
+                    ('Cancelado','Cancelado')
+            ], string="Estado Calidad")
+
+
+    quality_remarks = fields.Text(string="Obs. Calidad")
+
+    shipping_date_to_customer = fields.Date(string="Fecha Envío al Cliente")
+
+    port_terminal_origin = fields.Char(string="Terminal Portuario Origen")
+
+    other_coin = fields.Many2one('res.currency', string='Otra Moneda', default=45)  # CLP Default
+
+    exchange_rate_other_coin = fields.Float('Tasa de Cambio Otra Moneda')
+
+    type_transport = fields.Many2one('custom.type.transport', 'Vía de Transporte')
+
+    receiving_country_dte = fields.Many2one('custom.receiving.country.dte', 'País Receptor')
+
+    destiny_country_dte = fields.Many2one('custom.receiving.country.dte', 'País Destino')
+
+    sale_method = fields.Many2one('custom.sale.method', 'Modalidad de Venta')
+
+    export_clause = fields.Many2one('custom.export.clause', 'Cláusula de Exportación')
+
+    total_export_sales_clause = fields.Float(string="Valor Cláusula de Venta Exportación", default=0.00)
+
+    total_packages = fields.Integer(string="Total Bultos")
+
+    packages = fields.One2many('custom.package', 'invoice_id', string="Bultos")
+
+    uom_tara = fields.Many2one('custom.uom', 'Unidad de Medida Tara', default=7)  # Kn default
+
+    uom_gross_weight = fields.Many2one('custom.uom', 'Unidad de Peso Bruto', default=7)  # Kn default
+
+    uom_net_weight = fields.Many2one('custom.uom', 'Unidad de Peso Neto', default=7)  # Kn default
+
+    freight_amount = fields.Float(string="Flete")
+
+    safe_amount = fields.Float(string="Seguro")
+
+    city_final_destiny_id = fields.Many2one('custom.cities', string="Destino Final")
+
+    custom_department = fields.Many2one('res.partner', string="Oficina Aduanera")
+
+    transport_to_port = fields.Many2one('res.partner', string="Transporte a Puerto", domain="[('supplier','=',True)]")
+
+    dus_second_send = fields.Char(string="D.U.S 2DO.ENVÍO")
+
+    bill_of_lading = fields.Char(string="Conocimiento de Embarque")
+
+    phytosanitary_certificate = fields.Char(string="Certificado Fitosanitario")
+
+    origin_certificate = fields.Char(string="Certificado Origen")
+
+    plant = fields.Many2one('res.partner', string="Planta")
+
+    quality_type = fields.Many2one('custom.quality.type', string="Calidad")
+
+    consolidation = fields.Char(string="Consolidación")
+
+    total_container = fields.Integer(string="Total de Contenedores")
+
+    order_names = fields.Char(string="Pedidos")
+
+    canning_types = fields.Char(string="Envases")
+
+    temperature = fields.Char('Temperatura')
+
+    ventilation = fields.Char('Ventilación')
+
+    humidity = fields.Char('Humedad')
+
+    withdrawal_deposit = fields.Many2one('custom.withdrawal.deposits',string="Depósito Retiro")
+
+    freight_payment_term = fields.Many2one('custom.freight.payment.term',string="Termino de Pago Flete")
 
     @api.onchange('picture')
     def get_pictures(self):
@@ -322,7 +408,6 @@ class StockPicking(models.Model):
         return self.env.ref('dimabe_export_order.action_dispatch_label_report') \
             .report_action(self.pictures)
 
-
     @api.multi
     def get_permision(self):
         for i in self.env.user.groups_id:
@@ -357,7 +442,7 @@ class StockPicking(models.Model):
 
     @api.multi
     @api.depends('freight_value', 'safe_value')
-    def _compute_total_value(self):   
+    def _compute_total_value(self):
         for item in self:
             list_price = []
             list_qty = []
@@ -367,22 +452,22 @@ class StockPicking(models.Model):
                 if len(item.sale_id.order_line) != 0:
                     list_price.append(i.price_unit)
 
-            #move_line = []
-            #if item.is_multiple_dispatch:
+            # move_line = []
+            # if item.is_multiple_dispatch:
             #    for line in item.dispatch_line_ids:
             #        if line.sale_id.id == item.sale_id.id:
             #            
             #            move_line.append(line)
             #    if len(move_line) != 0:
             #        for m in move_line:
-             #           list_qty.append(m.real_dispatch_qty)
+            #           list_qty.append(m.real_dispatch_qty)
             #            prices = sum(list_price)
             #            qantas = sum(list_qty)
-            #else:
-                #move_line = item.move_ids_without_package
+            # else:
+            # move_line = item.move_ids_without_package
 
             if len(item.move_ids_without_package) != 0:
-                for a in item.move_ids_without_package:    
+                for a in item.move_ids_without_package:
                     list_qty.append(a.quantity_done)
                     prices = sum(list_price)
                     qantas = sum(list_qty)
@@ -394,8 +479,8 @@ class StockPicking(models.Model):
     def _compute_value_per_kilogram(self):
         for item in self:
             qty_total = 0
-            #move_line = []
-            #if item.is_multiple_dispatch:
+            # move_line = []
+            # if item.is_multiple_dispatch:
             #    for line in item.dispatch_line_ids:
             #        if line.sale_id == item.sale_id:
             #            move_line.append(line)
@@ -403,7 +488,7 @@ class StockPicking(models.Model):
             #        qty_total = qty_total + line.real_dispatch_qty
             #    if qty_total > 0:
             #        item.value_per_kilogram = item.total_value / qty_total
-            #else:
+            # else:
             for line in item.move_ids_without_package:
                 qty_total = qty_total + line.quantity_done
             if qty_total > 0:
@@ -417,14 +502,14 @@ class StockPicking(models.Model):
                 raise models.ValidationError('la comisión debe ser mayor que 0 y menor o igual que 3')
             else:
                 sum_required_qty = 0
-                #if item.is_multiple_dispatch:
+                # if item.is_multiple_dispatch:
                 #    for line in item.dispatch_line_ids:
                 #        if line.sale_id == item.sale_id:
                 #            sum_required_qty += line.required_sale_qty
                 #    item.total_commission = (item.commission / 100) \
                 #                        * (sum(item.sale_id.order_line.mapped('price_unit'))
                 #                           * sum_required_qty)
-                #else:
+                # else:
                 item.total_commission = (item.commission / 100) \
                                         * (sum(item.sale_id.order_line.mapped('price_unit'))
                                            * sum(item.move_ids_without_package.mapped('product_uom_qty')))
@@ -456,6 +541,3 @@ class StockPicking(models.Model):
         for item in self:
             if item.agent_id and item.commission > 3:
                 raise models.ValidationError('la comisión debe ser mayor que 0 y menor o igual que 3')
-
- 
-        

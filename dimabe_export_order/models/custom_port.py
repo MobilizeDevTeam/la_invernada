@@ -3,6 +3,7 @@ from odoo import fields, models
 
 class CustomPort(models.Model):
     _name = 'custom.port'
+    _description = "Puerto"
 
     name = fields.Char(string= 'Nombre', required=True)
 

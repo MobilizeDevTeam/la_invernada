@@ -44,6 +44,8 @@ class ProductProduct(models.Model):
 
     supply_id = fields.Many2one('product.product', 'Producto')
 
+
+
     @api.multi
     def _compute_measure(self):
         for item in self:

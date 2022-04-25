@@ -94,9 +94,8 @@
                     <field name="date_done"/>
                     <field name="elapsed_time"/>
                     <field name="origin"/>
-                    <field name="net_weight"/>
+                    <field name="display_net_weight" string="Kilos Netos"/>
                     <field name="container_number" invisible="context.get('picking_type', False) in ['in']"/>
-                    <field name="net_weight" />
                     <field name="backorder_id"/>
                     <field name="state"/>
                 </tree>

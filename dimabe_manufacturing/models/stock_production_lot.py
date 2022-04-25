@@ -275,6 +275,10 @@ class StockProductionLot(models.Model):
 
     is_finished = fields.Boolean('Finalizado')
 
+    ventilation_date = fields.Date(string='Fecha de Ventilacion')
+
+    store_place = fields.Char(string='Lugar de Almacenamiento')
+
     is_drying = fields.Boolean('Esta secando?', compute='compute_is_drying')
 
     @api.multi

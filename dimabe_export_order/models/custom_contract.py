@@ -3,6 +3,7 @@ from odoo import models, fields, api
 
 class CustomContract(models.Model):
     _name = 'custom.contract'
+    _description = "Tipo de Contracto (Custom)"
 
     name = fields.Char(
         'Número de Contrato',

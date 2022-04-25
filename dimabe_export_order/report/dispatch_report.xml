@@ -86,7 +86,7 @@
                                         <strong>F. EMISIÓN:</strong>
                                     </td>
                                     <td style="text-align:left;">
-                                        <span t-esc="d.date_done.date()"/>
+                                        <span t-esc="d.create_date.date()"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -2385,7 +2385,6 @@
         <field name="margin_right">15</field>
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
-        <field name="footer_line" eval="False"/>
         <field name="dpi">90</field>
     </record>
 
@@ -2402,7 +2401,6 @@
         <field name="margin_right">5</field>
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
-        <field name="footer_line" eval="False"/>
         <field name="dpi">90</field>
     </record>
 

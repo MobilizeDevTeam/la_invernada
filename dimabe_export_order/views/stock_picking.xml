@@ -4,7 +4,6 @@
             <field name="name">Export Page</field>
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
-            <field name="context">{'picking_id':id}</field>
             <field name="arch" type="xml">
 
                 <field name="backorder_id" position="after">
@@ -22,9 +21,10 @@
                     </field>
                 </field>
                 <xpath expr="//page[@name='extra']" position="after">
-                    <page string="COMEX" id="export_data" attrs="{'invisible':[('picking_type_code', '!=', 'outgoing')]}">
+                    <page string="COMEX" id="export_data"
+                          attrs="{'invisible':[('picking_type_code', '!=', 'outgoing')]}">
                         <group name="export_data" position="inside">
-                            <group string="Información de envío" style="width:100%" >
+                            <group string="Información de envío" style="width:100%">
                                 <group>
                                     <!--
                                     <field name="reserved_amount"/>
@@ -53,24 +53,24 @@
                                     <field name="value_per_kilogram" readonly="1"/>-->
                                 </group>
                             </group>
-                            <group string="Embarque" style="width:100%" >
+                            <group string="Embarque" style="width:100%">
                                 <group>
-                                        <field name="shipping_company" readonly="1"/>
-                                        <field name="ship" readonly="1"/>
-                                        <field name="ship_number" readonly="1"/>
-                                        <field name="type_transport" readonly="1"/>
-                                        <field name="etd" autocomplete="off" readonly="1"/>
-                                        <field name="etd_month" readonly="1"/>
-                                        <field name="etd_week" readonly="1"/>
-                                        <field name="eta" autocomplete="off" readonly="1"/>
+                                    <field name="shipping_company" readonly="1"/>
+                                    <field name="ship" readonly="1"/>
+                                    <field name="ship_number" readonly="1"/>
+                                    <field name="type_transport" readonly="1"/>
+                                    <field name="etd" autocomplete="off" readonly="1"/>
+                                    <field name="etd_month" readonly="1"/>
+                                    <field name="etd_week" readonly="1"/>
+                                    <field name="eta" autocomplete="off" readonly="1"/>
                                 </group>
                                 <group>
-                                        <field name="departure_port" readonly="1"/>
-                                        <field name="arrival_port" readonly="1"/>
-                                        <field name="required_loading_date" readonly="0"/>
-                                        <field name="required_loading_week" readonly="1"/>
-                                        <field name="departure_date" autocomplete="off" readonly="1"/>
-                                        <field name="arrival_date" autocomplete="off" readonly="1"/>
+                                    <field name="departure_port" readonly="1"/>
+                                    <field name="arrival_port" readonly="1"/>
+                                    <field name="required_loading_date" readonly="0"/>
+                                    <field name="required_loading_week" readonly="1"/>
+                                    <field name="departure_date" autocomplete="off" readonly="1"/>
+                                    <field name="arrival_date" autocomplete="off" readonly="1"/>
                                 </group>
                             </group>
                         </group>
@@ -103,7 +103,8 @@
                                         <field name="vgm_weight_dispatch" readonly="1"/>
                                     </group>
                                     <group string="Informacion de Exportacion">
-                                        <field name="customs_department" domain="[('category_id.name', '=', 'Aduana')]"/><!-- attrs="{'required':[('type_of_dispatch','=','exp')]}"/>-->
+                                        <field name="customs_department"
+                                               domain="[('category_id.name', '=', 'Aduana')]"/><!-- attrs="{'required':[('type_of_dispatch','=','exp')]}"/>-->
                                         <field name="note_dispatched"/><!-- attrs="{'required':[('type_of_dispatch','=','exp')]}"/>-->
                                         <field name="sell_truck"/>
                                         <field name="dispatch_guide_number"/>
@@ -146,8 +147,10 @@
                     <field name="specie"></field>
                 </xpath>
                 <xpath expr="//header">
-                    <button name="generate_packing_list" type="object" string="Packing List" attrs="{'invisible':[('picking_type_code', '!=', 'outgoing')]}"/>
-                    <button name="generate_inform" type="object" string="Informe de Trazabilidad" attrs="{'invisible':[('picking_type_code', '!=', 'outgoing')]}"/>
+                    <button name="generate_packing_list" type="object" string="Packing List"
+                            attrs="{'invisible':[('picking_type_code', '!=', 'outgoing')]}"/>
+                    <button name="generate_inform" type="object" string="Informe de Trazabilidad"
+                            attrs="{'invisible':[('picking_type_code', '!=', 'outgoing')]}"/>
                 </xpath>
             </field>
         </record>

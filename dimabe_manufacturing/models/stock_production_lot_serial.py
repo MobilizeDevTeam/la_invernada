@@ -435,9 +435,8 @@ class StockProductionLotSerial(models.Model):
             if not item.canning_id and item.bom_id:
                 item.set_bom_canning()
             if 'consumed' in vals.keys():
-                if vals['consumed']:
-                    item.stock_production_lot_id.verify_without_lot()
-                    item.stock_production_lot_id.update_kg(item.stock_production_lot_id.id)
+                item.stock_production_lot_id.verify_without_lot()
+                item.stock_production_lot_id.update_kg(item.stock_production_lot_id.id)
         return res
 
     @api.model
@@ -508,7 +507,7 @@ class StockProductionLotSerial(models.Model):
     @api.multi
     def get_full_url(self):
         self.ensure_one()
-        base_url = "https://dimabe-odoo-la-invernada.odoo.com"
+        base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url")
         return base_url
 
     @api.multi

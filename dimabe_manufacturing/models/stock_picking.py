@@ -87,6 +87,8 @@ class StockPicking(models.Model):
 
     is_child_dispatch = fields.Boolean('Es despacho hijo', copy=False)
 
+
+
     @api.onchange('is_multiple_dispatch')
     def set_multiple_dispatch(self):
         if self.is_multiple_dispatch and self.move_ids_without_package:

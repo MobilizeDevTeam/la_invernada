@@ -3,6 +3,7 @@ from odoo.addons import decimal_precision as dp
 import datetime
 from ..helpers import date_helper
 
+
 class DriedUnpelledHistory(models.Model):
     _name = 'dried.unpelled.history'
     _description = 'Historial de lotes terminados'
@@ -165,7 +166,6 @@ class DriedUnpelledHistory(models.Model):
         'Se puede adjustar la diferencia?',
         compute='compute_can_adjust'
     )
-
 
     @api.multi
     def compute_can_adjust(self):

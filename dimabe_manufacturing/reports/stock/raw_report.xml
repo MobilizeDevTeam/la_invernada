@@ -22,7 +22,9 @@
                     <field name="workcenter_id"/>
                     <field name="delivered_date"/>
                     <field name="physical_location"/>
+                    <field name="ventilation_date"/>
                     <field name="observations"/>
+                    <field name="store_place"/>
                 </tree>
             </field>
         </record>

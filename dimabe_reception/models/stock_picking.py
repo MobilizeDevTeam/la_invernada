@@ -33,6 +33,7 @@ class StockPicking(models.Model):
         'Kilos Netos',
         compute='_compute_net_weight',
         store=True,
+        default=lambda self: self.move_ids_without_package[0].product_uom_qty  if self.is_return and len(self.move_ids_without_package) > 0 else 0,
         digits=dp.get_precision('Product Unit of Measure')
     )
 
@@ -76,7 +77,7 @@ class StockPicking(models.Model):
         store=True
     )
 
-    #carrier_id = fields.Many2one('custom.carrier', 'Conductor')
+    # carrier_id = fields.Many2one('custom.carrier', 'Conductor')
 
     truck_in_date = fields.Datetime(
         'Entrada de Camión',
@@ -152,6 +153,27 @@ class StockPicking(models.Model):
         default=datetime.now().year
     )
 
+    is_returned = fields.Boolean('Fue Devuelvo?')
+
+    is_return = fields.Boolean('Es Devolucion?')
+
+    picking_return_id = fields.Many2one('stock.picking', string='Devuelto de ')
+
+    display_net_weight = fields.Float('Kilos Netos a mostrar',compute='compute_display_net_weight')
+
+
+
+
+    @api.multi
+    def compute_display_net_weight(self):
+        for item in self:
+            if item.picking_type_code == 'incoming':
+                item.display_net_weight = item.net_weight
+            elif item.picking_type_code == 'outgoing':
+                item.display_net_weight = item.net_weight_dispatch
+            else:
+                item.display_net_weight = 0
+
     @api.multi
     def gross_weight_button(self):
         data = self._get_data_from_weigh()
@@ -169,13 +191,16 @@ class StockPicking(models.Model):
         })
 
     @api.one
-    @api.depends('tare_weight', 'gross_weight', 'move_ids_without_package', 'quality_weight')
+    @api.depends('tare_weight', 'gross_weight', 'move_ids_without_package', 'quality_weight','is_return')
     def _compute_net_weight(self):
         if self.picking_type_code == 'incoming':
             self.net_weight = self.gross_weight - self.tare_weight + self.quality_weight
             if self.is_mp_reception or self.is_pt_reception or self.is_satelite_reception:
                 if self.canning_weight:
                     self.net_weight = self.net_weight - self.canning_weight
+        elif self.picking_type_code == 'incoming' and self.is_return:
+            if len(self.move_ids_without_package) > 0:
+                self.net_weight = self.move_ids_without_package[0].product_uom_qty
 
     @api.one
     @api.depends('move_ids_without_package')
@@ -304,10 +329,9 @@ class StockPicking(models.Model):
             lambda x: x.product_id.categ_id.id in self.picking_type_id.warehouse_id.products_can_be_stored.filtered(
                 lambda y: not y.reserve_ignore).ids) else None
 
-
     @api.multi
     def action_confirm(self):
-        if self.picking_type_code == 'incoming':
+        if self.picking_type_code == 'incoming' and not self.is_return:
             for stock_picking in self:
                 if stock_picking.is_mp_reception or stock_picking.is_pt_reception:
                     stock_picking.validate_mp_reception()
@@ -388,7 +412,7 @@ class StockPicking(models.Model):
 
     @api.multi
     def button_validate(self):
-        if self.picking_type_code == 'incoming':
+        if self.picking_type_code == 'incoming' and not self.is_return:
             for stock_picking in self:
                 message = ''
                 if stock_picking.is_mp_reception or stock_picking.is_pt_reception:
@@ -432,13 +456,26 @@ class StockPicking(models.Model):
                 if not m_move:
                     m_move = self.get_product_move()
                 if m_move and self.picking_type_id.require_dried:
-                    lot = self.env['stock.move.line'].search([('move_id.id','=',m_move.id)],limit=1)
+                    lot = self.env['stock.move.line'].search([('move_id.id', '=', m_move.id)], limit=1)
                     lot.lot_id.write({
                         'available_kg': lot.qty_done
                     })
             return res
         # Se usaran datos de modulo de dimabe_manufacturing
-        if self.picking_type_code == 'outgoing':
+        elif self.picking_type_code == 'incoming' and self.is_return:
+            for line in self.move_line_ids_without_package:
+                if line.lot_id:
+                    test = self.picking_return_id.packing_list_ids.filtered(
+                        lambda x: x.stock_production_lot_id.id == line.lot_id.id)
+                    self.picking_return_id.packing_list_ids.filtered(
+                        lambda x: x.stock_production_lot_id.id == line.lot_id.id).write({
+                        'consumed': False,
+                        'reserved_to_stock_picking_id': None
+                    })
+                    self.picking_return_id.assigned_pallet_ids.write({
+                        'reserved_to_stock_picking_id': None
+                    })
+        elif self.picking_type_code == 'outgoing':
             if all(s.consumed for s in self.packing_list_ids):
                 self.packing_list_ids.write({
                     'consumed': False
@@ -466,7 +503,20 @@ class StockPicking(models.Model):
                 serial.sudo().write({
                     'consumed': True
                 })
-            return super(StockPicking, self).button_validate()
+
+            if self.is_return:
+                line_id = self.move_line_ids_without_package.filtered(lambda x: x.lot_id)
+                if line_id:
+                    lot = line_id.lot_id
+                    if lot.id not in self.packing_list_ids.mapped('stock_production_lot_id').ids:
+                        for serial in lot.stock_production_lot_serial_ids:
+                            serial.sudo().write({
+                                'consumed': True
+                            })
+                    # lot_id.stock_production_lot_serial_ids.unlink()
+                    # quant_id = self.env['stock.quant'].sudo().search([('lot_id.id','=',lot_id.id)])
+                    # quant_id.sudo().unlink()
+                    # lot_id.sudo().unlink()
         return super(StockPicking, self).button_validate()
 
     def clean_reserved(self):

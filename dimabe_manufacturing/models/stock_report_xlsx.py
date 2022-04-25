@@ -2,6 +2,7 @@ from odoo import fields, models, api
 import xlsxwriter
 from datetime import date, datetime
 import base64
+from py_linq import Enumerable
 
 
 class StockReportXlsx(models.TransientModel):
@@ -13,13 +14,15 @@ class StockReportXlsx(models.TransientModel):
     stock_selection = fields.Selection(
         [('raw', 'Informe existencia materia prima'), ('calibrate', 'Informe existencia producto calibrado'),
          ('split', 'Informe existencia producto partido'), ('vain', 'Informe existencia producto vana'),
-         ('discard', 'Informe existencia descarte'), ('pt', 'Informe existencia producto terminado'),
+         ('discard', 'Informe existencia descarte'), ('pt_balance', 'Informe de existencia de Saldo PT'),
+         ('pt', 'Informe existencia producto terminado'),
          ('washed', 'Informe existencia producto lavado'), ('raw_service', 'Informe existencia materia prima servicio'),
          ('washed_service', 'Informe existencia producto lavado servicio'),
          ('split_service', 'Informe existencia producto partido servicio'),
          ('calibrate_service', 'Informe existencia Producto Calibrado Servicio'),
          ('discart_service', 'Informe existencia Producto Descarte Servicio'),
-         ('vain_service', 'Informe existencia Producto Vana Servicio')
+         ('vain_service', 'Informe existencia Producto Vana Servicio'),
+
          ])
 
     @api.multi
@@ -32,12 +35,13 @@ class StockReportXlsx(models.TransientModel):
         elif self.stock_selection == 'calibrate':
             dict_data = self.generate_excel_serial_report(
                 [('product_id.default_code', 'like', 'PSE006'), ('product_id.name', 'not like', 'Vana'),
+                 ('product_id.name', 'not ilike', 'Saldo PT'),
                  ('product_id.name', 'not like', 'Descarte'), ('harvest_filter', '=', self.year)], "Producto Calibrado")
         elif self.stock_selection == 'split':
             dict_data = self.generate_excel_serial_report(
                 [('product_id.categ_id.name', 'in',
                   ('Envasado NSC', 'Partido Manual Calidad', 'Partido Mecánico/Láser')),
-                 ('harvest_filter', '=', self.year),
+                 ('harvest_filter', '=', self.year), ('product_id.name', 'not ilike', 'Saldo PT'),
                  ('product_id.name', 'not like', 'Vana'), ('product_id.default_code', 'not like', 'PT')],
                 'Producto Partido')
         elif self.stock_selection == 'vain':
@@ -50,7 +54,8 @@ class StockReportXlsx(models.TransientModel):
         elif self.stock_selection == 'washed':
             dict_data = self.generate_excel_serial_report(
                 [('product_id.default_code', 'like', 'PSE016'), (
-                'product_id.categ_id.name', 'in', ('Envasado NSC', 'Partido Manual Calidad', 'Partido Mecánico/Láser')),
+                    'product_id.categ_id.name', 'in',
+                    ('Envasado NSC', 'Partido Manual Calidad', 'Partido Mecánico/Láser')),
                  ('product_id.name', 'not like', 'Vana'),
                  ('product_id.name', 'not like', '(S)'), ('harvest_filter', '=', self.year)], 'Producto Lavado')
         elif self.stock_selection == 'raw_service':
@@ -80,11 +85,18 @@ class StockReportXlsx(models.TransientModel):
             )
         elif self.stock_selection == 'discart_service':
             dict_data = self.generate_excel_serial_report(
-                [('product_id.name', 'like', 'Descarte'), ('product_id.categ_id.name', 'like', 'Servicio'),('product_id.product_tmpl_id.id','=',996)],
+                [('product_id.name', 'like', 'Descarte'), ('product_id.categ_id.name', 'like', 'Servicio'),
+                 ('product_id.product_tmpl_id.id', '=', 996)],
                 'Producto Descarte Servicio'
             )
         elif self.stock_selection == 'pt':
-            dict_data = self.generate_pt_report()
+            dict_data = self.generate_pt_report(
+                [("product_id.default_code", "ilike", "PT"), ("sale_order_id", "!=", False),
+                 ("harvest", "=", self.year)], "Producto Terminado")
+        elif self.stock_selection == 'pt_balance':
+            dict_data = self.generate_pt_report(
+                [('product_id.name', 'ilike', 'Saldo PT'), ("sale_order_id", "!=", False), ('harvest', '=', self.year)],
+                "Saldo PT")
         attachment_id = self.env['ir.attachment'].sudo().create({
             'name': dict_data['file_name'],
             'datas_fname': dict_data['file_name'],
@@ -113,14 +125,15 @@ class StockReportXlsx(models.TransientModel):
                   (6, 'Ubicacion Sistema:'), (7, 'Producto:'), (8, 'N° Guia:'), (9, 'Año Cosecha:'),
                   (10, 'Kilos Recepcionados:'), (11, 'Fecha Creacion:'), (12, 'Series Disponible:'),
                   (13, 'Enviado a Proceso de:'), (14, 'Fecha de Envio:'), (15, 'Ubicacion Fisica:'),
-                  (16, 'Observaciones:')]
+                  (16, 'Fecha de Ventilacion:'), (17, 'Observaciones'),
+                  (18, 'Lugar de Almacenamiento:')]
         for title in titles:
             sheet.write(row, col, title[1], text_format)
             col += 1
         row += 1
         col = 0
 
-        lots = self.env['stock.production.lot'].sudo().search(list_condition)
+        lots = self.env['stock.production.lot'].sudo().search(list_condition).filtered(lambda x: not x.is_drying)
         for lot in lots:
             if lot.producer_id:
                 sheet.write(row, col, lot.producer_id.display_name)
@@ -161,8 +174,14 @@ class StockReportXlsx(models.TransientModel):
             if lot.physical_location:
                 sheet.write(row, col, lot.physical_location, text_format)
             col += 1
+            if lot.ventilation_date:
+                sheet.write(row, col, lot.ventilation_date.strftime("%d-%m-%Y"))
+            col += 1
             if lot.observations:
                 sheet.write(row, col, lot.observations)
+            col += 1
+            if lot.store_place:
+                sheet.write(row, col, lot.store_place)
             row += 1
             col = 0
         workbook.close()
@@ -247,10 +266,11 @@ class StockReportXlsx(models.TransientModel):
         report_name = f'Informe de Existencia {type_product} {date.today().strftime("%d/%m/%Y")}.xlsx'
         return {'file_name': report_name, 'base64': file_base64}
 
-    def generate_pt_report(self):
-        file_name = 'pt_name.xlsx'
+    def generate_pt_report(self, list_condition, type_product):
+        # file_name = 'pt_name.xlsx'
+        file_name = "C:\\Users\\fabia\\Documents\\test.xlsx"
         workbook = xlsxwriter.Workbook(file_name)
-        sheet = workbook.add_worksheet('Informe PT')
+        sheet = workbook.add_worksheet(f'Informe {type_product}')
         text_format = workbook.add_format({
             'text_wrap': True
         })
@@ -268,10 +288,10 @@ class StockReportXlsx(models.TransientModel):
             col += 1
         col = 0
         row += 1
-        lots = self.env['stock.production.lot'].search(
-            [('product_id.default_code', 'like', 'PT'), ('sale_order_id', '!=', None), ('harvest', '=', self.year)])
+        lots = self.env['stock.production.lot'].search(list_condition)
         for lot in lots:
-            sheet.write(row, col, lot.sale_order_id.name, text_format)
+            if lot.sale_order_id.name:
+                sheet.write(row, col, lot.sale_order_id.name, text_format)
             col += 1
             sheet.write(row, col, lot.name)
             col += 1
@@ -319,5 +339,5 @@ class StockReportXlsx(models.TransientModel):
         workbook.close()
         with open(file_name, "rb") as file:
             file_base64 = base64.b64encode(file.read())
-        report_name = f'Informe de Existencia de Producto Terminado {date.today().strftime("%d/%m/%Y")}.xlsx'
+        report_name = f'Informe de Existencia de {type_product} {date.today().strftime("%d/%m/%Y")}.xlsx'
         return {'file_name': report_name, 'base64': file_base64}

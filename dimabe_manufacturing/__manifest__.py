@@ -101,6 +101,7 @@
         'reports/stock/discart_service_report.xml',
         'reports/stock/calibrate_service_report.xml',
         'reports/stock/vain_service.xml',
+        #'reports/stock/pt_balance_report.xml',
         'wizard/wizard_generate_temporary_serial.xml',
         'wizard/confirm_re_print_serial.xml',
         'wizard/custom_re_print_temporary_serial.xml',

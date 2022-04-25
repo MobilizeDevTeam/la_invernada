@@ -30,7 +30,7 @@
                             <field name="quality_type" attrs="{'invisible': [('dte_code', '!=', '110')]}"/>
                             <field name="freight_payment_term" attrs="{'invisible': [('dte_code', '!=', '110')]}"/>
                             <field name="safe_type" attrs="{'invisible': [('dte_code', '!=', '110')]}"/>
-                            <field name="stacking" attrs="{'invisible': [('dte_code', '!=', '110')]}"/>
+<!--                            <field name="stacking" attrs="{'invisible': [('dte_code', '!=', '110')]}"/>-->
                             <field name="cut_off" attrs="{'invisible': [('dte_code', '!=', '110')]}"/>
                         </group>
                         <group>

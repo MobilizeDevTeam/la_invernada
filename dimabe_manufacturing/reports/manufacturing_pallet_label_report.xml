@@ -7,12 +7,19 @@
                     <table style="text-align:left;">
                         <tr>
                             <th style="text-align:center;">
-                                <h2>PALLET</h2>
+                                <h1>
+                                    <span style="font-size:55px;">PALLET</span>
+                                </h1>
                             </th>
                             <td style="text-align: right !important;">
-                                <h2>
-                                    <span t-field="o.name"/>
-                                </h2>
+                                <h1>
+                                    <span style="font-size:55px;" t-field="o.name"/>
+                                </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <![CDATA[&nbsp;]]>
                             </td>
                         </tr>
                         <tr>
@@ -44,18 +51,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <t t-if="o.packaging_date">
-                                <th colspan="2">
-                                    <span t-field="o.packaging_date"/>
-                                </th>
-                            </t>
-                            <t t-else="">
-                                <th colspan="2">
-                                    <span t-field="o.create_date"/>
-                                </th>
-                            </t>
-                        </tr>
-                        <tr>
                             <td colspan="2" style="text-align:center !important;">
                                 <br/>
                                 <img
@@ -85,12 +80,19 @@
                     <table style="text-align:left;">
                         <tr>
                             <th style="text-align:center;">
-                                <h2>PALLET</h2>
+                                <h1>
+                                    <span style="font-size:55px;">PALLET</span>
+                                </h1>
                             </th>
                             <td style="text-align: right !important;">
-                                <h2>
-                                    <span t-field="o.name"/>
-                                </h2>
+                                <h1>
+                                    <span style="font-size:55px;" t-field="o.name"/>
+                                </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <![CDATA[&nbsp;]]>
                             </td>
                         </tr>
                         <tr>

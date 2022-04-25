@@ -3,6 +3,7 @@ from odoo import fields, models, api
 
 class CustomClientIdentifier(models.Model):
     _name = 'custom.client.identifier'
+    _description = "Identificador de Cliente"
 
     _sql_constraints = [
         ('name_uniq', 'UNIQUE(name)', 'el tipo de identificador ya se encuentra en el listado')

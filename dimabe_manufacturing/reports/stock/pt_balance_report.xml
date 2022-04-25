@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="view_stock_report_pt_balance_tree" model="ir.ui.view">
+            <field name="name">Informe de Saldo PT</field>
+            <field name="model">stock.production.lot</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" delete="false" create="false">
+                    <field name="sale_order_id" widget="many2onebutton" readonly="1"/>
+                    <field name="name" readonly="1" string="Lote"/>
+                    <field name="product_id" widget="many2onebutton" readonly="1"/>
+                    <field name="producer_id" widget="many2onebutton" readonly="1"/>
+                    <field name="measure" readonly="1"/>
+                    <field name="produced_qty" readonly="1"/>
+                    <field name="produced_weight" readonly="1"/>
+                    <field name="create_date" readonly="1"/>
+                    <field name="production_state" readonly="1"/>
+                    <field name="serial_not_consumed" readonly="1" string="Cantidad Disponible"/>
+                    <field name="available_kg" readonly="1"/>
+                    <field name="dispatch_state" readonly="1"/>
+                    <field name="client_id" widget="many2onebutton" readonly="1"/>
+                    <field name="destiny_country_id" widget="many2onebutton" string="Pais de Destino" readonly="1"/>
+                    <button type="object" string="Ver Pallets" name="show_pallets"/>
+                    <field name="dispatch_date"/>
+                    <field name="physical_location"/>
+                    <field name="observations"/>
+                </tree>
+            </field>
+        </record>
+        <record id="dimabe_manufacturing.stock_report_pt_balance" model="ir.actions.act_window">
+            <field name="name">Informe de Saldo de PT</field>
+            <field name="res_model">stock.production.lot</field>
+            <field name="view_mode">tree,graph,form,pivot</field>
+            <field name="view_id" ref="view_stock_report_pt_balance_tree"/>
+            <field name="domain">
+                [('product_id.name', 'like', 'Saldo PT')]
+            </field>
+        </record>
+        <menuitem id="stock_report_pt_balance_menu"
+                  sequence="20"
+                  action="dimabe_manufacturing.stock_report_pt_balance"
+                  name="Informe de Existencia de Saldo PT"
+                  parent="stock_report_menu"
+        />
+    </data>
+</odoo>
