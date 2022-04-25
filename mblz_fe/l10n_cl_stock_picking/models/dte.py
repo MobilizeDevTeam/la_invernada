@@ -243,6 +243,10 @@ class stock_picking(models.Model):
     def _receptor(self):
         Receptor = {}
         partner_id = self.partner_id or self.company_id.partner_id
+        if not partner_id.commercial_partner_id.country_id == self.company_id.country_id:
+            if not self.customs_department:
+                raise UserError("Debe seleccionar la Oficina Aduanera")
+            partner_id = self.customs_department
         if not partner_id.commercial_partner_id.document_number :
             raise UserError("Debe Ingresar RUT Receptor")
         Receptor['RUTRecep'] = partner_id.rut()
@@ -285,6 +289,8 @@ class stock_picking(models.Model):
                 Transporte['Chofer']['RUTChofer'] = self.chofer.rut()
                 Transporte['Chofer']['NombreChofer'] = self.chofer.name[:30]
         partner_id = self.partner_id or self.partner_id.commercial_partner_id or self.company_id.partner_id
+        if self.type_of_dispatch == 'exp':
+            partner_id = self.customs_department
         Transporte['DirDest'] = (partner_id.street or '')+ ' '+ (partner_id.street2 or '')
         Transporte['CmnaDest'] = partner_id.city_id.name or ''
         Transporte['CiudadDest'] = partner_id.city or ''
