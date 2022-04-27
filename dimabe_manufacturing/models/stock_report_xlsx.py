@@ -49,7 +49,9 @@ class StockReportXlsx(models.TransientModel):
                 [('product_id.name', 'ilike', 'Vana'), ('harvest_filter', '=', self.year)], "Vana")
         elif self.stock_selection == 'discard':
             dict_data = self.generate_excel_serial_report(
-                [('product_id.name', 'ilike', 'Descarte'), ('product_id.default_code', 'ilike', 'PSE006'),
+                [('product_id.name', 'like', 'Descarte'), ('product_id.name', 'not like', 'Lavado'),
+                 ('product_id.default_code', 'not like', 'PSES'), ('product_id.categ_id.name', 'not in', (
+                'Envasado NSC', 'Partido Manual Calidad', 'Partido Mecánico/Láser')),
                  ('harvest_filter', '=', self.year)], 'Descarte')
         elif self.stock_selection == 'washed':
             dict_data = self.generate_excel_serial_report(
