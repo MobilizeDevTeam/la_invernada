@@ -35,7 +35,7 @@
             <field name="view_id" ref="view_stock_report_tree"/>
             <field name="domain">
                 [('product_id.default_code', 'like', 'MP'), ('product_id.default_code', 'not like', 'MPS'),
-                 ('product_id.name', 'not like', 'Verde'),('stock_production_lot_serial_ids','!=',None),('stock_picking_id','!=',None),('stock_picking_id','!=',False)]
+                 ('product_id.name', 'not like', 'Verde'),('stock_production_lot_serial_ids','!=',None)]
             </field>
         </record>
         <record id="search_raw_report_view" model="ir.ui.view">
