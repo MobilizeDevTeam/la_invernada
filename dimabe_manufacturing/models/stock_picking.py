@@ -277,6 +277,9 @@ class StockPicking(models.Model):
         for item in self:
             lot = self.env['stock.production.lot'].search([('name', '=', item.name)])
             if lot:
+                quant = self.env['stock.quant'].sudo().search([('lot_id.id','=',lot.id)])
+                if quant:
+                    quant.sudo().unlink()
                 lot.stock_production_lot_serial_ids.sudo().unlink()
                 lot.sudo().unlink()
             return super(StockPicking, self).action_cancel()
